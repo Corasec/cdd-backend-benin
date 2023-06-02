@@ -1,5 +1,5 @@
-
 .DS_Store
+.idea
 .idea/cdd-backend.iml
 .idea/inspectionProfiles/profiles_settings.xml
 .idea/inspectionProfiles/Project_Default.xml
@@ -9,3 +9,18 @@
 src/.platform/nginx/conf.d/proxy.conf
 src/.pre-commit-config.yaml
 .idea/workspace.xml
+*.log
+
+# virtual environments
+.venv
+ENV/
+venv*/
+dump.rdb
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# dotenv
+.env
