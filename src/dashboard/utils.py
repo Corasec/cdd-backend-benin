@@ -10,10 +10,17 @@ from process_manager.models import Task, Phase, Activity, Project
 from cloudant.document import Document
 
 from administrativelevels import models as administrativelevels_models
+import unicodedata
 
 
 def structure_the_words(word):
     return (" ").join(re.findall(r"[A-Z][^A-Z]*|[^A-Z]+", word)).lower().capitalize()
+
+
+def strip_accents(s):
+    return "".join(
+        c for c in unicodedata.normalize("NFD", s) if unicodedata.category(c) != "Mn"
+    )
 
 
 def sort_dictionary_list_by_field(list_to_be_sorted, field, reverse=False):

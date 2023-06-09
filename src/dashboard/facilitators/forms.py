@@ -8,8 +8,10 @@ from dashboard.utils import (
     get_administrative_level_choices,
     get_administrative_levels_by_level,
     get_choices,
+    strip_accents,
 )
 from no_sql_client import NoSQLClient
+from cdd.constants import ADMINISTRATIVE_LEVEL_TYPE
 
 
 class FilterTaskForm(forms.Form):
@@ -101,7 +103,7 @@ class FilterTaskForm(forms.Form):
 
 class FacilitatorForm(forms.Form):
     error_messages = {
-        "password_mismatch": _("The two password fields didn’t match."),
+        "password_mismatch": _("The two password fields didn't match."),
         "duplicated_username": _(
             "A facilitator with that username is already registered."
         ),
@@ -169,10 +171,12 @@ class FacilitatorForm(forms.Form):
 
         nsc = NoSQLClient()
         administrative_levels_db = nsc.get_db("administrative_levels")
+        print("connected to db")
         label = get_administrative_levels_by_level(administrative_levels_db)[0][
             "administrative_level"
         ].upper()
         self.fields["administrative_level"].label = label
+        print("extracted label")
 
         administrative_level_choices = get_administrative_level_choices(
             administrative_levels_db
@@ -181,8 +185,11 @@ class FacilitatorForm(forms.Form):
             "administrative_level"
         ].widget.choices = administrative_level_choices
         self.fields["administrative_level"].choices = administrative_level_choices
+        print("get choices")
         self.fields["administrative_level"].widget.attrs["class"] = "region"
+        print("widget region")
         self.fields["administrative_levels"].widget.attrs["class"] = "hidden"
+        print("widget hidden")
 
 
 class UpdateFacilitatorForm(forms.ModelForm):
@@ -236,10 +243,9 @@ class UpdateFacilitatorForm(forms.ModelForm):
 
 
 class FilterFacilitatorForm(forms.Form):
-    region = forms.ChoiceField()
-    prefecture = forms.ChoiceField()
+    departement = forms.ChoiceField()
     commune = forms.ChoiceField()
-    canton = forms.ChoiceField()
+    arrondissement = forms.ChoiceField()
     village = forms.ChoiceField()
 
     def __init__(self, *args, **kwargs):
@@ -250,37 +256,45 @@ class FilterFacilitatorForm(forms.Form):
 
         administrativelevels_docs = db.all_docs(include_docs=True)["rows"]
 
-        query_result_regions = []
-        query_result_prefectures = []
+        query_result_departements = []
         query_result_communes = []
-        query_result_cantons = []
+        query_result_arrondissements = []
         query_result_villages = []
         for doc in administrativelevels_docs:
             doc = doc.get("doc")
             if doc.get("type") == "administrative_level":
-                if doc.get("administrative_level") == "Region":
-                    query_result_regions.append(doc)
-                elif doc.get("administrative_level") == "Prefecture":
-                    query_result_prefectures.append(doc)
-                elif doc.get("administrative_level") == "Commune":
+                if (
+                    doc.get("administrative_level")
+                    == ADMINISTRATIVE_LEVEL_TYPE.DÉPARTEMENT
+                ):
+                    query_result_departements.append(doc)
+                elif (
+                    doc.get("administrative_level") == ADMINISTRATIVE_LEVEL_TYPE.COMMUNE
+                ):
                     query_result_communes.append(doc)
-                elif doc.get("administrative_level") == "Canton":
-                    query_result_cantons.append(doc)
-                elif doc.get("administrative_level") == "Village":
+                elif (
+                    doc.get("administrative_level")
+                    == ADMINISTRATIVE_LEVEL_TYPE.ARRONDISSEMENT
+                ):
+                    query_result_arrondissements.append(doc)
+                elif (
+                    doc.get("administrative_level") == ADMINISTRATIVE_LEVEL_TYPE.VILLAGE
+                ):
                     query_result_villages.append(doc)
 
-        self.fields["region"].widget.choices = get_choices(
-            query_result_regions, "administrative_id", "name"
+        self.fields[
+            strip_accents(ADMINISTRATIVE_LEVEL_TYPE.DÉPARTEMENT)
+        ].widget.choices = get_choices(
+            query_result_departements, "administrative_id", "name"
         )
-        self.fields["prefecture"].widget.choices = get_choices(
-            query_result_prefectures, "administrative_id", "name"
-        )
-        self.fields["commune"].widget.choices = get_choices(
+        self.fields[ADMINISTRATIVE_LEVEL_TYPE.COMMUNE].widget.choices = get_choices(
             query_result_communes, "administrative_id", "name"
         )
-        self.fields["canton"].widget.choices = get_choices(
-            query_result_cantons, "administrative_id", "name"
+        self.fields[
+            ADMINISTRATIVE_LEVEL_TYPE.ARRONDISSEMENT
+        ].widget.choices = get_choices(
+            query_result_arrondissements, "administrative_id", "name"
         )
-        self.fields["village"].widget.choices = get_choices(
+        self.fields[ADMINISTRATIVE_LEVEL_TYPE.VILLAGE].widget.choices = get_choices(
             query_result_villages, "administrative_id", "name"
         )

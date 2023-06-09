@@ -18,16 +18,13 @@
             <div class="clearfix"></div>
              <div class="row facilitators-filter">
                 <div class="col-2">
-                    {% bootstrap_field form.region show_label=False %}
-                </div>
-                <div class="col-2">
-                    {% bootstrap_field form.prefecture show_label=False %}
+                    {% bootstrap_field form.departement show_label=False %}
                 </div>
                 <div class="col-2">
                     {% bootstrap_field form.commune show_label=False %}
                 </div>
                 <div class="col-2">
-                    {% bootstrap_field form.canton show_label=False %}
+                    {% bootstrap_field form.arrondissement show_label=False %}
                 </div>
                 <div class="col-2">
                     {% bootstrap_field form.village show_label=False %}
@@ -128,15 +125,14 @@
 
 
     <script type="text/javascript">
-        let ids = ["id_region", "id_prefecture", "id_commune", "id_canton", "id_village"]
+        let ids = ["id_departement", "id_commune", "id_arrondissement", "id_village"]
         var type_field = "";
         let spin = $('#spin');
         let facilitators = $('#facilitators-list');
         let administrative_level = $('#id_administrative_level');
-        let id_region = $('#id_region');
-        let id_prefecture = $('#id_prefecture');
+        let id_departement = $('#id_departement');
         let id_commune = $('#id_commune');
-        let id_canton = $('#id_canton');
+        let id_arrondissement = $('#id_arrondissement');
         let id_village = $('#id_village');
 
         function loadFacilitators(type_field="") {
@@ -145,10 +141,9 @@
                 type: "GET",
                 url: "{% url 'dashboard:facilitators:facilitators_list' %}",
                 data: {
-                    id_region: id_region.val(),
-                    id_prefecture: id_prefecture.val(),
+                    id_departement: id_departement.val(),
                     id_commune: id_commune.val(),
-                    id_canton: id_canton.val(),
+                    id_arrondissement: id_arrondissement.val(),
                     id_village: id_village.val(),
                     type_field: type_field,
                     is_training: "{{ is_training }}",
@@ -200,20 +195,16 @@
 
 {% block select2 %}
     <script type="text/javascript">
-        $("#id_region").select2({
-            placeholder: "{% translate 'Region' %}",
+        $("#id_departement").select2({
+            placeholder: "{% translate 'Département' %}",
             allowClear: true
-        });
-        $("#id_prefecture").select2({
-            placeholder: "{% translate 'Prefecture' %}",
-            allowClear: true,
         });
         $("#id_commune").select2({
             placeholder: "{% translate 'Commune' %}",
             allowClear: true,
         });
-         $("#id_canton").select2({
-            placeholder: "{% translate 'Canton' %}",
+         $("#id_arrondissement").select2({
+            placeholder: "{% translate 'Arrondissement' %}",
             allowClear: true,
         });
          $("#id_village").select2({
