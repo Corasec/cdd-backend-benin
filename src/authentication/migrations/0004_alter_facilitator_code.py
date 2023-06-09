@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('authentication', '0003_rename_test_mode_facilitator_develop_mode_and_more'),
+        ("authentication", "0003_rename_test_mode_facilitator_develop_mode_and_more"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='facilitator',
-            name='code',
-            field=models.CharField(max_length=6, verbose_name='code'),
+            model_name="facilitator",
+            name="code",
+            field=models.CharField(max_length=6, verbose_name="code"),
         ),
     ]

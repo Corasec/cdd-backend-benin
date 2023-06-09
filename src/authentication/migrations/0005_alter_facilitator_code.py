@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('authentication', '0004_alter_facilitator_code'),
+        ("authentication", "0004_alter_facilitator_code"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='facilitator',
-            name='code',
-            field=models.CharField(max_length=6, unique=True, verbose_name='code'),
+            model_name="facilitator",
+            name="code",
+            field=models.CharField(max_length=6, unique=True, verbose_name="code"),
         ),
     ]

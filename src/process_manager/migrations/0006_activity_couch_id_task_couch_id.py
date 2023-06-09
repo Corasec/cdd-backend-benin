@@ -4,20 +4,19 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('process_manager', '0005_remove_task_total_tasks'),
+        ("process_manager", "0005_remove_task_total_tasks"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='activity',
-            name='couch_id',
+            model_name="activity",
+            name="couch_id",
             field=models.CharField(blank=True, max_length=255),
         ),
         migrations.AddField(
-            model_name='task',
-            name='couch_id',
+            model_name="task",
+            name="couch_id",
             field=models.CharField(blank=True, max_length=255),
         ),
     ]

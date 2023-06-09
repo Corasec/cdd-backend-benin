@@ -4,20 +4,18 @@
 import time
 from no_sql_client import NoSQLClient
 
-def iterate_administrative_level(adm_list, type):
 
+def iterate_administrative_level(adm_list, type):
     for administrative_level in adm_list.filter(type=type):
         print(administrative_level.name)
 
 
 class CddClient:
-
     def __init__(self):
         self.nsc = NoSQLClient()
         self.adm_db = self.nsc.get_db("administrative_levels")
 
     def iterate_administrative_level(self, adm_list, type):
-
         for administrative_level in adm_list.filter(type=type):
             print("CREATING", administrative_level.name)
             self.create_administrative_level(administrative_level)
@@ -41,17 +39,16 @@ class CddClient:
         self.nsc.create_document(self.adm_db, data)
         new = self.adm_db.get_query_result(
             {
-                "type": 'administrative_level',
+                "type": "administrative_level",
                 "administrative_id": str(adm_obj.id),
             }
         )
         final = None
         for obj in new:
             final = obj
-        return final['_id']
+        return final["_id"]
 
     def sync_administrative_levels(self, administrative_levels) -> bool:
-
         # Sync Region
         self.iterate_administrative_level(administrative_levels, "Region")
         # Sync Prefecture
@@ -66,9 +63,7 @@ class CddClient:
         return True
 
     def update_administrative_level(self, obj) -> bool:
-        administrative_level = self.adm_db[
-             obj.no_sql_db_id
-        ]
+        administrative_level = self.adm_db[obj.no_sql_db_id]
         print(administrative_level)
         parent = ""
         if obj.parent:
@@ -85,5 +80,3 @@ class CddClient:
                 administrative_level[k] = v
         administrative_level.save()
         return True
-
-

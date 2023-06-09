@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('process_manager', '0006_activity_couch_id_task_couch_id'),
+        ("process_manager", "0006_activity_couch_id_task_couch_id"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='task',
-            name='form',
+            model_name="task",
+            name="form",
             field=models.JSONField(blank=True, null=True),
         ),
     ]

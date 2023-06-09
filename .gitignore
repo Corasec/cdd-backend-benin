@@ -10,6 +10,7 @@ src/.platform/nginx/conf.d/proxy.conf
 src/.pre-commit-config.yaml
 .idea/workspace.xml
 *.log
+local_settings.py
 
 # virtual environments
 .venv

@@ -5,39 +5,46 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('process_manager', '0002_project_couch_id_project_description'),
+        ("process_manager", "0002_project_couch_id_project_description"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='activity',
-            name='description',
+            model_name="activity",
+            name="description",
             field=models.TextField(default=1),
             preserve_default=False,
         ),
         migrations.AddField(
-            model_name='activity',
-            name='order',
+            model_name="activity",
+            name="order",
             field=models.IntegerField(default=1),
             preserve_default=False,
         ),
         migrations.AddField(
-            model_name='activity',
-            name='phase',
-            field=models.ForeignKey(default=1, on_delete=django.db.models.deletion.CASCADE, to='process_manager.phase'),
+            model_name="activity",
+            name="phase",
+            field=models.ForeignKey(
+                default=1,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="process_manager.phase",
+            ),
             preserve_default=False,
         ),
         migrations.AddField(
-            model_name='activity',
-            name='project',
-            field=models.ForeignKey(default=1, on_delete=django.db.models.deletion.CASCADE, to='process_manager.project'),
+            model_name="activity",
+            name="project",
+            field=models.ForeignKey(
+                default=1,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="process_manager.project",
+            ),
             preserve_default=False,
         ),
         migrations.AddField(
-            model_name='activity',
-            name='total_tasks',
+            model_name="activity",
+            name="total_tasks",
             field=models.IntegerField(default=1),
             preserve_default=False,
         ),

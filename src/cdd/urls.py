@@ -18,28 +18,27 @@ from django.conf.urls import include
 from django.contrib import admin
 from django.urls import path
 from django.conf.urls.i18n import i18n_patterns
+from django.conf.urls.static import static
+
 
 from .views import set_language
 
-handler400 = 'dashboard.authentication.views.handler400'
-handler403 = 'dashboard.authentication.views.handler403'
-handler404 = 'dashboard.authentication.views.handler404'
-handler500 = 'dashboard.authentication.views.handler500'
-
+handler400 = "dashboard.authentication.views.handler400"
+handler403 = "dashboard.authentication.views.handler403"
+handler404 = "dashboard.authentication.views.handler404"
+handler500 = "dashboard.authentication.views.handler500"
 
 
 urlpatterns = [
-    path('set-language/', 
-         set_language, 
-         name='set_language'),
-    path('i18n/', include('django.conf.urls.i18n')),
-    path('attachments/', include('attachments.urls')),
-    path('authentication/', include('authentication.urls')),
+    path("set-language/", set_language, name="set_language"),
+    path("i18n/", include("django.conf.urls.i18n")),
+    path("attachments/", include("attachments.urls")),
+    path("authentication/", include("authentication.urls")),
 ]
 
 urlpatterns += i18n_patterns(
-    path('admin/', admin.site.urls),
-    path('', include('dashboard.urls')),
+    path("admin/", admin.site.urls),
+    path("", include("dashboard.urls")),
 )
 
 
@@ -55,10 +54,18 @@ urlpatterns += i18n_patterns(
 
 if settings.DEBUG:
     from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
+    import debug_toolbar
 
     urlpatterns += [
         # YOUR PATTERNS
-        path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
+        path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
         # Optional UI:
-        path('api/schema/swagger-ui/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
+        path(
+            "api/schema/swagger-ui/",
+            SpectacularSwaggerView.as_view(url_name="schema"),
+            name="swagger-ui",
+        ),
     ]
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    urlpatterns += [path("__debug__/", include("debug_toolbar.urls"))]

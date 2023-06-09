@@ -7,39 +7,36 @@ from process_manager.models import Project
 from no_sql_client import NoSQLClient
 
 
-
 class ProjectForm(forms.Form):
     error_messages = {
-        'duplicated_project': _('A project with this name is already registered.'),
+        "duplicated_project": _("A project with this name is already registered."),
     }
     name = forms.CharField()
     description = forms.CharField()
     couch_id = forms.CharField(required=False)
 
-
     def _post_clean(self):
-        super()._post_clean()     
+        super()._post_clean()
 
     def clean_name(self):
-        name = self.cleaned_data['name']
+        name = self.cleaned_data["name"]
         if Project.objects.filter(name=name).exists():
-            self.add_error('name', self.error_messages["duplicated_project"])
+            self.add_error("name", self.error_messages["duplicated_project"])
         return name
 
-    def clean(self):        
+    def clean(self):
         return super().clean()
 
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)     
-    
-    
-class UpdateProjectForm(forms.ModelForm):    
-    
+        super().__init__(*args, **kwargs)
+
+
+class UpdateProjectForm(forms.ModelForm):
     name = forms.CharField()
     description = forms.CharField()
-    couch_id = forms.CharField(required=False)  
+    couch_id = forms.CharField(required=False)
 
-    def clean(self):        
+    def clean(self):
         return super().clean()
 
     def __init__(self, *args, **kwargs):
@@ -47,7 +44,4 @@ class UpdateProjectForm(forms.ModelForm):
 
     class Meta:
         model = Project
-        fields = [] # specify the fields to be displayed 
-
-
-
+        fields = []  # specify the fields to be displayed

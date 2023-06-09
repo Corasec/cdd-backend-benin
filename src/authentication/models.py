@@ -12,13 +12,12 @@ class Facilitator(models.Model):
     no_sql_user = models.CharField(max_length=150, unique=True)
     no_sql_pass = models.CharField(max_length=128)
     no_sql_db_name = models.CharField(max_length=150, unique=True)
-    username = models.CharField(max_length=150, unique=True, verbose_name=_('username'))
-    password = models.CharField(max_length=128, verbose_name=_('password'))
-    code = models.CharField(max_length=6, unique=True, verbose_name=_('code'))
-    active = models.BooleanField(default=False, verbose_name=_('active'))
-    develop_mode = models.BooleanField(default=False, verbose_name=_('test mode'))
-    training_mode = models.BooleanField(default=False, verbose_name=_('test mode'))
-
+    username = models.CharField(max_length=150, unique=True, verbose_name=_("username"))
+    password = models.CharField(max_length=128, verbose_name=_("password"))
+    code = models.CharField(max_length=6, unique=True, verbose_name=_("code"))
+    active = models.BooleanField(default=False, verbose_name=_("active"))
+    develop_mode = models.BooleanField(default=False, verbose_name=_("test mode"))
+    training_mode = models.BooleanField(default=False, verbose_name=_("test mode"))
 
     __current_password = None
 
@@ -47,19 +46,18 @@ class Facilitator(models.Model):
             replicate_design = kwargs.pop("replicate_design")
 
         if not self.id:
-
             self.set_no_sql_user()
 
             no_sql_pass_length = 13
             self.no_sql_pass = secrets.token_urlsafe(no_sql_pass_length)
 
-            self.no_sql_db_name = f'facilitator_{self.no_sql_user}'
+            self.no_sql_db_name = f"facilitator_{self.no_sql_user}"
 
             if not self.code:
                 self.code = self.get_code(self.no_sql_user)
 
             if not self.password:
-                self.password = f'ChangeItNow{self.code}'
+                self.password = f"ChangeItNow{self.code}"
 
             nsc = NoSQLClient()
             nsc.create_user(self.no_sql_user, self.no_sql_pass)
@@ -69,28 +67,26 @@ class Facilitator(models.Model):
             nsc.add_member_to_database(facilitator_db, self.no_sql_user)
 
         if self.password and self.password != self.__current_password:
-            self.password = make_password(self.password, salt=None, hasher='default')
+            self.password = make_password(self.password, salt=None, hasher="default")
 
         return super().save(*args, **kwargs)
 
     def hash_password(self, *args, **kwargs):
-        self.password = make_password(self.password, salt=None, hasher='default')
+        self.password = make_password(self.password, salt=None, hasher="default")
         return super().save(*args, **kwargs)
 
     def create_without_no_sql_db(self, *args, **kwargs):
-
         if not self.code:
             self.code = self.get_code(self.no_sql_user)
 
         if not self.password:
-            self.password = f'ChangeItNow{self.code}'
+            self.password = f"ChangeItNow{self.code}"
 
-        self.password = make_password(self.password, salt=None, hasher='default')
+        self.password = make_password(self.password, salt=None, hasher="default")
 
         return super().save(*args, **kwargs)
 
     def create_with_no_sql_db(self, *args, **kwargs):
-
         if not self.id:
             self.set_no_sql_user()
 
@@ -106,12 +102,11 @@ class Facilitator(models.Model):
             nsc.add_member_to_database(facilitator_db, self.no_sql_user)
 
         if self.password and self.password != self.__current_password:
-            self.password = make_password(self.password, salt=None, hasher='default')
+            self.password = make_password(self.password, salt=None, hasher="default")
 
         return super().save(*args, **kwargs)
 
     def create_with_manually_assign_database(self, *args, **kwargs):
-
         if not self.id:
             self.set_no_sql_user()
 
@@ -119,8 +114,8 @@ class Facilitator(models.Model):
                 self.code = self.get_code(self.no_sql_user)
 
             if not self.password:
-                self.password = f'ChangeItNow{self.code}'
-            self.password = make_password(self.password, salt=None, hasher='default')
+                self.password = f"ChangeItNow{self.code}"
+            self.password = make_password(self.password, salt=None, hasher="default")
 
             nsc = NoSQLClient()
             nsc.create_user(self.no_sql_user, self.no_sql_pass)
@@ -128,7 +123,7 @@ class Facilitator(models.Model):
             nsc.add_member_to_database(facilitator_db, self.no_sql_user)
 
         if self.password and self.password != self.__current_password:
-            self.password = make_password(self.password, salt=None, hasher='default')
+            self.password = make_password(self.password, salt=None, hasher="default")
 
         return super().save(*args, **kwargs)
 
@@ -144,35 +139,40 @@ class Facilitator(models.Model):
     @staticmethod
     def get_code(seed):
         import zlib
-        return str(zlib.adler32(str(seed).encode('utf-8')))[:6]
+
+        return str(zlib.adler32(str(seed).encode("utf-8")))[:6]
 
     def get_name(self):
         try:
             nsc = NoSQLClient()
             facilitator_database = nsc.get_db(self.no_sql_db_name)
-            return facilitator_database.get_query_result(
-                {"type": "facilitator"}
-            )[:][0]['name']
+            return facilitator_database.get_query_result({"type": "facilitator"})[:][0][
+                "name"
+            ]
         except Exception as e:
             return None
-        
+
     def get_name_with_sex(self):
         try:
             nsc = NoSQLClient()
             facilitator_doc = nsc.get_db(self.no_sql_db_name).get_query_result(
                 {"type": "facilitator"}
             )[:][0]
-            return f"{facilitator_doc['sex']} {facilitator_doc['name']}" if facilitator_doc.get('sex') else facilitator_doc['name']
+            return (
+                f"{facilitator_doc['sex']} {facilitator_doc['name']}"
+                if facilitator_doc.get("sex")
+                else facilitator_doc["name"]
+            )
         except Exception as e:
             return None
-        
+
     def get_email(self):
         try:
             nsc = NoSQLClient()
             facilitator_database = nsc.get_db(self.no_sql_db_name)
-            return facilitator_database.get_query_result(
-                {"type": "facilitator"}
-            )[:][0]['email']
+            return facilitator_database.get_query_result({"type": "facilitator"})[:][0][
+                "email"
+            ]
         except Exception as e:
             return None
 
@@ -187,5 +187,5 @@ class Facilitator(models.Model):
             return "deploy"
 
     class Meta:
-        verbose_name = _('Facilitator')
-        verbose_name_plural = _('Facilitators')
+        verbose_name = _("Facilitator")
+        verbose_name_plural = _("Facilitators")

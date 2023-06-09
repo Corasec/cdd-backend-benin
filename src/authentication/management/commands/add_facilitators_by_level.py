@@ -7,11 +7,13 @@ from no_sql_client import NoSQLClient
 
 
 class Command(BaseCommand):
-    help = "Creates a Facilitator and a related NoSQL database for each database administrative level and given level" \
-           " (if one doesn't exist, otherwise don't create)"
+    help = (
+        "Creates a Facilitator and a related NoSQL database for each database administrative level and given level"
+        " (if one doesn't exist, otherwise don't create)"
+    )
     error_messages = {
         "more_than_one": "There is more than one document type facilitator in the facilitator database. "
-                         "Make sure there is only one document of type facilitator in the facilitator database.",
+        "Make sure there is only one document of type facilitator in the facilitator database.",
         "no_facilitator": "There is no document type facilitator in the facilitator database.",
         "no_administrative_level": "There is no document of type administrative_level with the given name.",
         "no_database": "There is no database with the given name.",
@@ -19,16 +21,22 @@ class Command(BaseCommand):
     }
 
     def add_arguments(self, parser):
-        parser.add_argument('database', type=str, help='Name of the database with documents type administrative_level')
-        parser.add_argument('administrative_level', type=str, help='Administrative level name')
+        parser.add_argument(
+            "database",
+            type=str,
+            help="Name of the database with documents type administrative_level",
+        )
+        parser.add_argument(
+            "administrative_level", type=str, help="Administrative level name"
+        )
 
     def handle(self, *args, **kwargs):
-        database = kwargs['database']
-        administrative_level = kwargs['administrative_level']
+        database = kwargs["database"]
+        administrative_level = kwargs["administrative_level"]
 
         nsc = NoSQLClient()
         try:
-            nsc.get_db('design')
+            nsc.get_db("design")
         except Exception as e:
             raise CommandError(f'{self.error_messages["no_database"]} {e}')
         try:
@@ -38,7 +46,7 @@ class Command(BaseCommand):
 
         regions = administrative_level_db.get_query_result(
             {
-                "type": 'administrative_level',
+                "type": "administrative_level",
                 "administrative_level": administrative_level,
             }
         )
@@ -48,21 +56,25 @@ class Command(BaseCommand):
         added = 0
         for doc in regions:
             facilitator, created = Facilitator.objects.get_or_create(
-                username=f'{doc["name"].replace(" ", "_")}_{doc["administrative_id"]}')
+                username=f'{doc["name"].replace(" ", "_")}_{doc["administrative_id"]}'
+            )
             if not created:
                 self.stdout.write(
-                    f'Found existing facilitator (username: {facilitator.username}) '
-                    f'for {administrative_level}: {doc["name"]}')
+                    f"Found existing facilitator (username: {facilitator.username}) "
+                    f'for {administrative_level}: {doc["name"]}'
+                )
                 continue
             facilitator_db_name = facilitator.no_sql_db_name
             facilitator_db = nsc.get_db(facilitator_db_name)
-            query_result = facilitator_db.get_query_result({"type": 'facilitator'})[:]
+            query_result = facilitator_db.get_query_result({"type": "facilitator"})[:]
             start = time.time()
 
             # Wait up to 10 seconds while the document of type facilitator is replicated in the newly created database
             # for the facilitator
             while len(query_result) == 0:
-                query_result = facilitator_db.get_query_result({"type": 'facilitator'})[:]
+                query_result = facilitator_db.get_query_result({"type": "facilitator"})[
+                    :
+                ]
                 end = time.time()
                 if end - start > 10:
                     facilitator.delete(no_sql_db=facilitator_db_name)
@@ -72,7 +84,7 @@ class Command(BaseCommand):
                 facilitator.delete(no_sql_db=facilitator_db_name)
                 raise CommandError(self.error_messages["more_than_one"])
 
-            facilitator_doc = facilitator_db[query_result[0]['_id']]
+            facilitator_doc = facilitator_db[query_result[0]["_id"]]
             facilitator_doc["administrative_levels"] = [
                 {
                     "name": doc["name"],
@@ -83,5 +95,8 @@ class Command(BaseCommand):
 
             added += 1
             self.stdout.write(
-                f'Created facilitator (username: {facilitator.username}) for {administrative_level}: {doc["name"]}')
-        self.stdout.write(self.style.SUCCESS(f'Successfully added {added} facilitators'))
+                f'Created facilitator (username: {facilitator.username}) for {administrative_level}: {doc["name"]}'
+            )
+        self.stdout.write(
+            self.style.SUCCESS(f"Successfully added {added} facilitators")
+        )

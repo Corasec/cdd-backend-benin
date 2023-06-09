@@ -4,28 +4,42 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Facilitator',
+            name="Facilitator",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('no_sql_user', models.CharField(max_length=150, unique=True)),
-                ('no_sql_pass', models.CharField(max_length=128)),
-                ('no_sql_db_name', models.CharField(max_length=150, unique=True)),
-                ('username', models.CharField(max_length=150, unique=True, verbose_name='username')),
-                ('password', models.CharField(max_length=128, verbose_name='password')),
-                ('code', models.CharField(max_length=6, unique=True, verbose_name='code')),
-                ('active', models.BooleanField(default=False, verbose_name='active')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("no_sql_user", models.CharField(max_length=150, unique=True)),
+                ("no_sql_pass", models.CharField(max_length=128)),
+                ("no_sql_db_name", models.CharField(max_length=150, unique=True)),
+                (
+                    "username",
+                    models.CharField(
+                        max_length=150, unique=True, verbose_name="username"
+                    ),
+                ),
+                ("password", models.CharField(max_length=128, verbose_name="password")),
+                (
+                    "code",
+                    models.CharField(max_length=6, unique=True, verbose_name="code"),
+                ),
+                ("active", models.BooleanField(default=False, verbose_name="active")),
             ],
             options={
-                'verbose_name': 'Facilitator',
-                'verbose_name_plural': 'Facilitators',
+                "verbose_name": "Facilitator",
+                "verbose_name_plural": "Facilitators",
             },
         ),
     ]

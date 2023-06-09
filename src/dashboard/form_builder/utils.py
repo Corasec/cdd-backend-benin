@@ -1,12 +1,12 @@
-
 def generate_doctype_json(doctype_id):
     """
-    Generate a JSON Schema representation of a Doctype 
+    Generate a JSON Schema representation of a Doctype
 
     Args:
         doctype (int): ID of the Doctype
     """
     pass
+
 
 def save_doctype_json(doctype_id):
     """

@@ -4,20 +4,19 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('authentication', '0002_facilitator_test_mode'),
+        ("authentication", "0002_facilitator_test_mode"),
     ]
 
     operations = [
         migrations.RenameField(
-            model_name='facilitator',
-            old_name='test_mode',
-            new_name='develop_mode',
+            model_name="facilitator",
+            old_name="test_mode",
+            new_name="develop_mode",
         ),
         migrations.AddField(
-            model_name='facilitator',
-            name='training_mode',
-            field=models.BooleanField(default=False, verbose_name='test mode'),
+            model_name="facilitator",
+            name="training_mode",
+            field=models.BooleanField(default=False, verbose_name="test mode"),
         ),
     ]

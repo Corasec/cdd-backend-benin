@@ -4,14 +4,16 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('process_manager', '0004_task_activity_task_description_task_order_task_phase_and_more'),
+        (
+            "process_manager",
+            "0004_task_activity_task_description_task_order_task_phase_and_more",
+        ),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='task',
-            name='total_tasks',
+            model_name="task",
+            name="total_tasks",
         ),
     ]

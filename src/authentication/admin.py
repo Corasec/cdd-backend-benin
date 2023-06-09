@@ -13,57 +13,52 @@ class FacilitatorForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['password'].required = False
-        self.fields['password'].widget.attrs['placeholder'] = _('Default value: ChangeItNow[code]')
-        self.fields['code'].required = False
+        self.fields["password"].required = False
+        self.fields["password"].widget.attrs["placeholder"] = _(
+            "Default value: ChangeItNow[code]"
+        )
+        self.fields["code"].required = False
 
 
 class FacilitatorAdmin(admin.ModelAdmin):
     form = FacilitatorForm
-    readonly_fields = ('no_sql_user', 'no_sql_pass', 'no_sql_db_name')
+    readonly_fields = ("no_sql_user", "no_sql_pass", "no_sql_db_name")
     list_filter = [
-        'active',
+        "active",
     ]
 
     search_fields = [
-        'no_sql_user',
-        'no_sql_db_name',
-        'username',
-        'code',
-        'active',
+        "no_sql_user",
+        "no_sql_db_name",
+        "username",
+        "code",
+        "active",
     ]
 
     list_display = [
-        'no_sql_user',
-        'no_sql_db_name',
-        'username',
-        'code',
-        'active',
+        "no_sql_user",
+        "no_sql_db_name",
+        "username",
+        "code",
+        "active",
     ]
 
 
 class LogEntryAdmin(admin.ModelAdmin):
-    list_filter = [
-        'content_type',
-        'action_flag'
-    ]
+    list_filter = ["content_type", "action_flag"]
 
-    search_fields = [
-        'user__username',
-        'object_repr',
-        'change_message'
-    ]
+    search_fields = ["user__username", "object_repr", "change_message"]
 
     list_display = [
-        'action_time',
-        'user',
-        'content_type',
-        'action_flag',
-        'change_message'
+        "action_time",
+        "user",
+        "content_type",
+        "action_flag",
+        "change_message",
     ]
 
     def queryset(self, request):
-        return super().queryset(request).prefetch_related('content_type')
+        return super().queryset(request).prefetch_related("content_type")
 
 
 admin.site.register(Facilitator, FacilitatorAdmin)
