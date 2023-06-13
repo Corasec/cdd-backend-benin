@@ -139,6 +139,18 @@ msgstr "Au moins un niveau administratif est requis."
 msgid "Password confirmation"
 msgstr "Confirmation du mot de passe"
 
+#: .\dashboard\facilitators\forms.py
+msgid "Username"
+msgstr "Nom d'utilisateur"
+
+#: .\dashboard\facilitators\forms.py
+msgid "Name"
+msgstr "Nom"
+
+#: .\dashboard\facilitators\forms.py
+msgid "Phone"
+msgstr "Numéro de téléphone"
+
 #: .\dashboard\facilitators\forms.py:94
 msgid "Enter the same password as before, for verification."
 msgstr "Entrez le même mot de passe que précédemment, pour vérification."

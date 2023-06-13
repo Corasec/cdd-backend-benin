@@ -111,10 +111,10 @@ class FacilitatorForm(forms.Form):
             "At least one administrative level is required."
         ),
     }
-    name = forms.CharField()
+    name = forms.CharField(label=_("Name"))
     email = forms.EmailField(required=False)
-    phone = forms.CharField(required=False)
-    username = forms.CharField()
+    phone = forms.CharField(required=False, label=_("Phone"))
+    username = forms.CharField(label=_("Username"))
     password1 = forms.CharField(
         label=_("Password"),
         strip=False,

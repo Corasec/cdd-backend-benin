@@ -21,12 +21,14 @@ from no_sql_client import NoSQLClient
 from dashboard.utils import (
     get_all_docs_administrative_levels_by_type_and_administrative_id,
     get_all_docs_administrative_levels_by_type_and_parent_id,
+    strip_accents,
 )
 from authentication.permissions import (
     CDDSpecialistPermissionRequiredMixin,
     SuperAdminPermissionRequiredMixin,
     AdminPermissionRequiredMixin,
 )
+from cdd.constants import ADMINISTRATIVE_LEVEL_TYPE
 
 
 class FacilitatorListView(PageMixin, LoginRequiredMixin, generic.ListView):
@@ -79,118 +81,94 @@ class FacilitatorListTableView(LoginRequiredMixin, generic.ListView):
     context_object_name = "facilitators"
 
     def get_results(self):
-        id_region = self.request.GET.get("id_region")
-        id_prefecture = self.request.GET.get("id_prefecture")
+        id_departement = self.request.GET.get("id_departement")
         id_commune = self.request.GET.get("id_commune")
-        id_canton = self.request.GET.get("id_canton")
+        id_arrondissement = self.request.GET.get("id_arrondissement")
         id_village = self.request.GET.get("id_village")
         type_field = self.request.GET.get("type_field")
         facilitators = []
         if (
-            id_region or id_prefecture or id_commune or id_canton or id_village
+            id_departement or id_commune or id_arrondissement or id_village
         ) and type_field:
             _type = None
-            if id_region and type_field == "region":
-                _type = "region"
-            elif id_prefecture and type_field == "prefecture":
-                _type = "prefecture"
-            elif id_commune and type_field == "commune":
-                _type = "commune"
-            elif id_canton and type_field == "canton":
-                _type = "canton"
-            elif id_village and type_field == "village":
-                _type = "village"
+            if id_departement and type_field == strip_accents(ADMINISTRATIVE_LEVEL_TYPE.DÉPARTEMENT):
+                _type = ADMINISTRATIVE_LEVEL_TYPE.DÉPARTEMENT
+            elif id_commune and type_field == ADMINISTRATIVE_LEVEL_TYPE.COMMUNE:
+                _type = ADMINISTRATIVE_LEVEL_TYPE.COMMUNE
+            elif id_arrondissement and type_field == ADMINISTRATIVE_LEVEL_TYPE.ARRONDISSEMENT:
+                _type = ADMINISTRATIVE_LEVEL_TYPE.ARRONDISSEMENT
+            elif id_village and type_field == ADMINISTRATIVE_LEVEL_TYPE.VILLAGE:
+                _type = ADMINISTRATIVE_LEVEL_TYPE.VILLAGE
 
             nsc = NoSQLClient()
 
-            liste_prefectures = []
             liste_communes = []
-            liste_cantons = []
+            liste_arrondissements = []
             liste_villages = []
             administrative_levels = nsc.get_db("administrative_levels").all_docs(
                 include_docs=True
             )["rows"]
 
-            if _type == "region":
-                region = (
+            if _type == ADMINISTRATIVE_LEVEL_TYPE.DÉPARTEMENT:
+                departement = (
                     get_all_docs_administrative_levels_by_type_and_administrative_id(
-                        administrative_levels, _type.title(), id_region
+                        administrative_levels, _type, id_departement
                     )
                 )
-                region = region[:][0]
-                _type = "prefecture"
-                liste_prefectures = (
+                departement = departement[:][0]
+                _type = ADMINISTRATIVE_LEVEL_TYPE.COMMUNE
+                liste_communes = (
                     get_all_docs_administrative_levels_by_type_and_parent_id(
                         administrative_levels,
-                        _type.title(),
-                        region["administrative_id"],
+                        _type,
+                        departement["administrative_id"],
                     )[:]
                 )
 
-            if _type == "prefecture":
-                if not liste_prefectures:
-                    liste_prefectures = get_all_docs_administrative_levels_by_type_and_administrative_id(
-                        administrative_levels, _type.title(), id_prefecture
-                    )[
-                        :
-                    ]
-                _type = "commune"
-                for prefecture in liste_prefectures:
-                    [
-                        liste_communes.append(elt)
-                        for elt in get_all_docs_administrative_levels_by_type_and_parent_id(
-                            administrative_levels,
-                            _type.title(),
-                            prefecture["administrative_id"],
-                        )[
-                            :
-                        ]
-                    ]
-
-            if _type == "commune":
+            if _type == ADMINISTRATIVE_LEVEL_TYPE.COMMUNE:
                 if not liste_communes:
                     liste_communes = get_all_docs_administrative_levels_by_type_and_administrative_id(
-                        administrative_levels, _type.title(), id_commune
+                        administrative_levels, _type, id_commune
                     )[
                         :
                     ]
-                _type = "canton"
+                _type = ADMINISTRATIVE_LEVEL_TYPE.ARRONDISSEMENT
                 for commune in liste_communes:
                     [
-                        liste_cantons.append(elt)
+                        liste_arrondissements.append(elt)
                         for elt in get_all_docs_administrative_levels_by_type_and_parent_id(
                             administrative_levels,
-                            _type.title(),
+                            _type,
                             commune["administrative_id"],
                         )[
                             :
                         ]
                     ]
 
-            if _type == "canton":
-                if not liste_cantons:
-                    liste_cantons = get_all_docs_administrative_levels_by_type_and_administrative_id(
-                        administrative_levels, _type.title(), id_canton
+            if _type == ADMINISTRATIVE_LEVEL_TYPE.ARRONDISSEMENT:
+                if not liste_arrondissements:
+                    liste_arrondissements = get_all_docs_administrative_levels_by_type_and_administrative_id(
+                        administrative_levels, _type, id_arrondissement
                     )[
                         :
                     ]
-                _type = "village"
-                for canton in liste_cantons:
+                _type = ADMINISTRATIVE_LEVEL_TYPE.VILLAGE
+                for arrondissement in liste_arrondissements:
                     [
                         liste_villages.append(elt)
                         for elt in get_all_docs_administrative_levels_by_type_and_parent_id(
                             administrative_levels,
-                            _type.title(),
-                            canton["administrative_id"],
+                            _type,
+                            arrondissement["administrative_id"],
                         )[
                             :
                         ]
                     ]
 
-            if _type == "village":
+            if _type == ADMINISTRATIVE_LEVEL_TYPE.VILLAGE:
                 if not liste_villages:
                     liste_villages = get_all_docs_administrative_levels_by_type_and_administrative_id(
-                        administrative_levels, _type.title(), id_village
+                        administrative_levels, _type, id_village
                     )[
                         :
                     ]
