@@ -13,11 +13,11 @@
                                  {% translate 'Phase Detail' %}<br>
                             </div>
                         </div>
-                         <p style="font-size: 16px !important;"><strong>Name:</strong> {{ phase.name }}</p>
-                         <p style="font-size: 16px !important;"><strong>Order:</strong> {{ phase.order }}</p>
+                         <p style="font-size: 16px !important;"><strong>Nom:</strong> {{ phase.name }}</p>
+                         <p style="font-size: 16px !important;"><strong>Ordre:</strong> {{ phase.order }}</p>
                          <p style="font-size: 16px !important;"><strong>Description:</strong> {{ phase.description }}</p>
-                         <p style="font-size: 16px !important;"><strong>Project:</strong> {{ phase.project.name }}</p>
-                         <p style="font-size: 16px !important;"><strong>Couch Id:</strong> {{ phase.couch_id }}</p>
+                         <p style="font-size: 16px !important;"><strong>Projet:</strong> {{ phase.project.name }}</p>
+                         {% comment %} <p style="font-size: 16px !important;"><strong>Couch Id:</strong> {{ phase.couch_id }}</p> {% endcomment %}
                     </div>
                 </div>
                 {% if user.is_superuser or user|has_group:"Admin" %}
@@ -25,12 +25,12 @@
                 <a href="{% url 'dashboard:activities:create_activity' phase.pk%}"
                 class="btn btn-primary btn-sm rounded-xl">
                     <i class="fa fa-plus mr-2"></i>
-                    Create Activity
+                    Créer une étape
                 </a>
             </div>
             <a href="{% url 'dashboard:phases:phase_Detail' phase.pk %}"
                             class="btn btn-primary btn-xs" title="{% translate 'Referesh' %}">
-                            <span class="_web">Referesh</span>
+                            <span class="_web">Rafraîchir</span>
                             <span class="_mobile"><i class="fa fa-eye"></i></span>
                         </a>
             {% endif %}
@@ -41,7 +41,7 @@
             <div class="card-body table-responsive">
                 <div class="col-8 text-left">
                     <div class="fs28 lh35 text-primary text-bold-family mb-4" style="font-size: 16px !important;">
-                         {% translate 'Activity List' %}<br>
+                         {% translate 'Liste des étapes' %}<br>
                     </div>
                 </div>
                 <table id="table" class="table">
@@ -49,7 +49,7 @@
                     <tr>
                         <th>{% translate 'Order' %}</th>
                         <th>{% translate 'Name' %}</th>                        
-                        <th>{% translate 'Total Task' %}</th>
+                        <th>{% translate 'Nombre de tâches' %}</th>
                         <th width="50%">{% translate 'Action' %}</th>
                     </tr>
                     </thead>
@@ -63,27 +63,33 @@
                                 {% if user.is_superuser or user|has_group:"Admin" %}
                                 <a href="{% url 'dashboard:activities:activity_Detail' activity.pk %}"   
                                     class="btn btn-primary btn-xs" title="{% translate 'View' %}">
-                                    <span class="_web">View</span>
+                                    <span class="_web">Détails</span>
                                     <span class="_mobile"><i class="fa fa-eye"></i></span>
                                 </a>
                                 <a href="{% url 'dashboard:activities:update' activity.pk %}"
                                     class="btn btn-primary btn-xs" title="{% translate 'Edit' %}">
-                                    <span class="_web">Edit</span>
+                                    <span class="_web">Editer</span>
                                     <span class="_mobile"><i class="fa fa-edit"></i></span>
                                 </a>
+                                {% if activity.order > 1 %}
                                 <a href="{% url 'dashboard:activities:MoveUp' activity.pk %}"
                                     class="btn btn-primary btn-xs" title="{% translate 'Move Up' %}">
-                                    <span class="_web">Move Up</span>
+                                    <span class="_web">Monter</span>
                                     <span class="_mobile"><i class="fa fa-arrow-up"></i></span>
-                                </a>                        
+                                </a>               
+                                {% endif %}
+                                
+                                {% if activity.order != nbr_activities %}
                                 <a href="{% url 'dashboard:activities:MoveDown' activity.pk %}"
                                     class="btn btn-primary btn-xs" title="{% translate 'Move Down' %}">
-                                    <span class="_web">Move Down</span>
+                                    <span class="_web">Descendre</span>
                                     <span class="_mobile"><i class="fa fa-arrow-down"></i></span>
                                 </a>
+                                {% endif %}
+                                
                                 <a href="{% url 'dashboard:activities:delete' activity.pk %}"
                                     class="btn btn-sm btn-danger" title="{% translate 'Delete' %}">
-                                    <span class="_web">Delete</span>
+                                    <span class="_web">Supprimer</span>
                                     <span class="_mobile"><i class="fa fa-trash"></i></span>
                                 </a>
                                 {% endif %}

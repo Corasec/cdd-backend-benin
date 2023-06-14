@@ -11,7 +11,7 @@ class ProjectForm(forms.Form):
     error_messages = {
         "duplicated_project": _("A project with this name is already registered."),
     }
-    name = forms.CharField()
+    name = forms.CharField(label="Nom")
     description = forms.CharField()
     couch_id = forms.CharField(required=False)
 
@@ -32,7 +32,7 @@ class ProjectForm(forms.Form):
 
 
 class UpdateProjectForm(forms.ModelForm):
-    name = forms.CharField()
+    name = forms.CharField(label="nom")
     description = forms.CharField()
     couch_id = forms.CharField(required=False)
 
@@ -44,4 +44,4 @@ class UpdateProjectForm(forms.ModelForm):
 
     class Meta:
         model = Project
-        fields = []  # specify the fields to be displayed
+        fields = ["name", "description"]  # specify the fields to be displayed

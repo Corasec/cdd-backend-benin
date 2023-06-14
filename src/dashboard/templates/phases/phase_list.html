@@ -21,27 +21,34 @@
                         {% if user.is_superuser or user|has_group:"Admin" %}
                         <a href="{% url 'dashboard:phases:phase_Detail' phase.pk %}"
                             class="btn btn-primary btn-xs" title="{% translate 'View' %}">
-                            <span class="_web">View</span>
+                            <span class="_web">Détails</span>
                             <span class="_mobile"><i class="fa fa-eye"></i></span>
                         </a>
                         <a href="{% url 'dashboard:phases:update' phase.pk %}"
                             class="btn btn-primary btn-xs" title="{% translate 'Edit' %}">
-                            <span class="_web">Edit</span>
+                            <span class="_web">Editer</span>
                             <span class="_mobile"><i class="fa fa-edit"></i></span>
                         </a>
+
+                        {% if phase.order > 1 %}
                         <a href="{% url 'dashboard:phases:MoveUp' phase.pk %}"
                             class="btn btn-primary btn-xs" title="{% translate 'Move Up' %}">
-                            <span class="_web">Move Up</span>
+                            <span class="_web">Monter</span>
                             <span class="_mobile"><i class="fa fa-arrow-up"></i></span>
-                        </a>                        
+                        </a>
+
+                        {% endif %}
+                        {% if phase.order != maxOrder %}                     
                         <a href="{% url 'dashboard:phases:MoveDown' phase.pk %}"
                             class="btn btn-primary btn-xs" title="{% translate 'Move Down' %}">
-                            <span class="_web">Move Down</span>
+                            <span class="_web">Descendre</span>
                             <span class="_mobile"><i class="fa fa-arrow-down"></i></span>
                         </a>
+                        {% endif %}
+                        
                         <a href="{% url 'dashboard:phases:delete' phase.pk %}"
                             class="btn btn-sm btn-danger" title="{% translate 'Delete' %}">
-                            <span class="_web">Delete</span>
+                            <span class="_web">Supprimer</span>
                             <span class="_mobile"><i class="fa fa-trash"></i></span>
                         </a>
                         {% endif %}
@@ -65,7 +72,7 @@
                 dom: "ltipr",
                 columnDefs: [
                     {
-                        targets: 4,
+                        targets: 2,
                         orderable: false,
                         searchable: false,
                     }

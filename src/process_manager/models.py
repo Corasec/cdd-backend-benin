@@ -23,6 +23,9 @@ class Project(models.Model):
     description = models.TextField()
     couch_id = models.CharField(max_length=255, blank=True)
 
+    class Meta:
+        verbose_name= "projet"
+
     def __str__(self):
         return self.name
 
@@ -71,6 +74,9 @@ class Phase(models.Model):
     project = models.ForeignKey("Project", on_delete=models.CASCADE)
     couch_id = models.CharField(max_length=255, blank=True)
     order = models.IntegerField()
+
+    class Meta:
+        verbose_name= "phase"
 
     def __str__(self):
         return self.name
@@ -129,6 +135,10 @@ class Activity(models.Model):
     order = models.IntegerField()
     couch_id = models.CharField(max_length=255, blank=True)
 
+    class Meta:
+        verbose_name= "étape"
+        verbose_name_plural = "étapes"
+
     def __str__(self):
         return self.phase.name + "-" + self.name
 
@@ -185,6 +195,9 @@ class Task(models.Model):
     order = models.IntegerField()
     form = models.JSONField(null=True, blank=True)
     couch_id = models.CharField(max_length=255, blank=True)
+
+    class Meta:
+        verbose_name= "tâche"
 
     def __str__(self):
         return self.phase.name + "-" + self.activity.name + "-" + self.name

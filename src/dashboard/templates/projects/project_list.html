@@ -6,9 +6,9 @@
         <table id="table" class="table">
             <thead>
             <tr>
-                <th>{% translate 'Project Name' %}</th>
+                <th>{% translate 'Nom du projet' %}</th>
                 <th>{% translate 'Description' %}</th>
-                <th>{% translate 'Couch Id' %}</th>
+                {% comment %} <th>{% translate 'Couch Id' %}</th> {% endcomment %}
                 <th width="20%" >{% translate 'Action' %}</th>
             </tr>
             </thead>
@@ -17,18 +17,18 @@
                 <tr>
                     <td>{{ project.name }}</td>
                     <td>{{ project.description }}</td>
-                    <td>{{ project.couch_id }}</td>
+                    {% comment %} <td>{{ project.couch_id }}</td> {% endcomment %}
 
                     <td>                        
                         {% if user.is_superuser or user|has_group:"Admin" %}
                         <a href="{% url 'dashboard:projects:update' project.pk %}"
                             class="btn btn-primary btn-xs" title="{% translate 'Edit' %}">
-                            <span class="_web">Edit</span>
+                            <span class="_web">Editer</span>
                             <span class="_mobile"><i class="fa fa-edit"></i></span>
                         </a>
                         <a href="{% url 'dashboard:projects:delete' project.pk %}"
                             class="btn btn-sm btn-danger" title="{% translate 'Delete' %}">
-                            <span class="_web">Delete</span>
+                            <span class="_web">Supprimer</span>
                             <span class="_mobile"><i class="fa fa-edit"></i></span>
                         </a>
                         {% endif %}

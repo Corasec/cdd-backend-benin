@@ -42,14 +42,16 @@ class PhaseListTableView(LoginRequiredMixin, generic.ListView):
     def get_results(self):
         phases = []
         phases = list(Phase.objects.all().order_by("order"))
+        self.maxOrder = len(phases)
         return phases
 
     def get_queryset(self):
         return self.get_results()
 
-    # def get_context_data(self, **kwargs):
-    #     context = super().get_context_data(**kwargs)
-    #     return context
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["maxOrder"] = self.maxOrder
+        return context
 
 
 class CreatePhaseFormView(
@@ -290,11 +292,12 @@ def phase_detail_view(request, id):
     try:
         phase = Phase.objects.get(id=id)
         activities = list(Activity.objects.filter(phase_id=phase.id).order_by("order"))
+        nbr_activities = len(activities)
     except Phase.DoesNotExist:
         raise Http404("Phase does not exist")
 
     return render(
         request,
         "phases/phase_detail.html",
-        context={"phase": phase, "activities": activities},
+        context={"phase": phase, "activities": activities, "nbr_activities": nbr_activities},
     )

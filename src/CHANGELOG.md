@@ -4,6 +4,7 @@ List of features add to the project
 
 ## unreleased
 
-- update `FacilitatorListTableView` for search filter
-- update `FacilitatorListView` to match new administrative level structure
-- change `Administrativelevel` model to reflet Benin condition
+- updating `views` relatives to phases, activities and tasks
+- updated `FacilitatorListTableView` for search filter
+- updated `FacilitatorListView` to match new administrative level structure
+- changed `Administrativelevel` model to reflet Benin condition

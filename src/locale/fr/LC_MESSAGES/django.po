@@ -61,14 +61,14 @@ msgstr "mode test"
 
 #: .\authentication\models.py:190
 msgid "Facilitator"
-msgstr "Animateur communautaire"
+msgstr "Facilitateur communautaire"
 
 #: .\authentication\models.py:191 .\dashboard\facilitators\views.py:30
 #: .\dashboard\facilitators\views.py:234 .\dashboard\facilitators\views.py:423
 #: .\dashboard\facilitators\views.py:462
 #: .\dashboard\templates\layouts\sidebar.html:30
 msgid "Facilitators"
-msgstr "Animateurs communautaires"
+msgstr "Facilitateurs communautaires"
 
 #: .\authentication\permissions.py:26 .\authentication\permissions.py:45
 #: .\authentication\permissions.py:69 .\authentication\permissions.py:90
@@ -129,7 +129,7 @@ msgstr "Les deux champs du mot de passe ne correspondent pas."
 
 #: .\dashboard\facilitators\forms.py:77 .\dashboard\facilitators\forms.py:152
 msgid "A facilitator with that username is already registered."
-msgstr "Un animateur communautaire portant ce nom d'utilisateur est déjà enregistré."
+msgstr "Un facilitateur communautaire portant ce nom d'utilisateur est déjà enregistré."
 
 #: .\dashboard\facilitators\forms.py:78 .\dashboard\facilitators\forms.py:153
 msgid "At least one administrative level is required."
@@ -157,16 +157,16 @@ msgstr "Entrez le même mot de passe que précédemment, pour vérification."
 
 #: .\dashboard\facilitators\views.py:228
 msgid "Facilitator Profile"
-msgstr "Profil de l'Animateur"
+msgstr "Profil du facilitateur"
 
 #: .\dashboard\facilitators\views.py:416
 #: .\dashboard\templates\facilitators\list.html:13
 msgid "Create Facilitator"
-msgstr "Créer un Animateur"
+msgstr "Créer un facilitateur"
 
 #: .\dashboard\facilitators\views.py:455
 msgid "Edit Facilitator"
-msgstr "Editer l'Animateur"
+msgstr "Editer le facilitateur"
 
 #: .\dashboard\forms\forms.py:8
 msgid "Allowed file size less than or equal to 2 MB"
@@ -353,7 +353,7 @@ msgstr "Village"
 #: .\dashboard\templates\facilitators\profile.html:48
 #: .\dashboard\templates\facilitators\update.html:32
 msgid "Facilitator not assigned"
-msgstr "Animateur non désigné"
+msgstr "Facilitateur non désigné"
 
 #: .\dashboard\templates\facilitators\profile.html:64
 #: .\dashboard\templates\facilitators\update.html:39
@@ -366,7 +366,7 @@ msgstr "Dernière activité"
 
 #: .\dashboard\templates\facilitators\profile.html:121
 msgid "Facilitator Code"
-msgstr "Code de l'animateur"
+msgstr "Code du facilitateur"
 
 #: .\dashboard\templates\facilitators\profile.html:135
 msgid "Task List"
