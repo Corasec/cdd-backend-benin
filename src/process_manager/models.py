@@ -24,7 +24,7 @@ class Project(models.Model):
     couch_id = models.CharField(max_length=255, blank=True)
 
     class Meta:
-        verbose_name= "projet"
+        verbose_name = "projet"
 
     def __str__(self):
         return self.name
@@ -76,7 +76,7 @@ class Phase(models.Model):
     order = models.IntegerField()
 
     class Meta:
-        verbose_name= "phase"
+        verbose_name = "phase"
 
     def __str__(self):
         return self.name
@@ -136,7 +136,7 @@ class Activity(models.Model):
     couch_id = models.CharField(max_length=255, blank=True)
 
     class Meta:
-        verbose_name= "étape"
+        verbose_name = "étape"
         verbose_name_plural = "étapes"
 
     def __str__(self):
@@ -197,7 +197,7 @@ class Task(models.Model):
     couch_id = models.CharField(max_length=255, blank=True)
 
     class Meta:
-        verbose_name= "tâche"
+        verbose_name = "tâche"
 
     def __str__(self):
         return self.phase.name + "-" + self.activity.name + "-" + self.name

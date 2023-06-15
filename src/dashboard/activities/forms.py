@@ -12,7 +12,7 @@ class ActivityForm(forms.Form):
         "duplicated_activity": _("An Activity with this name is already registered."),
     }
     # choices = tuple(Project.objects.all().values_list())
-    name = forms.CharField()
+    name = forms.CharField(label="Nom")
     description = forms.CharField()
     # project = forms.ChoiceField(choices = [])
     # phase = forms.ChoiceField(choices = [])

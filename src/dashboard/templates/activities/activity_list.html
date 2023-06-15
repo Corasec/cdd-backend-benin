@@ -8,6 +8,7 @@
             <tr>                
                 <th>{% translate 'Order' %}</th>
                 <th>{% translate 'Name' %}</th>
+                <th>{% translate 'Nombre de tâches' %}</th>
                 <th width="40%">{% translate 'Action' %}</th>
             </tr>
             </thead>
@@ -16,21 +17,22 @@
                 <tr>
                     <td>{{ activity.order }}</td>                    
                     <td>{{ activity.name }}</td>
+                    <td>{{ activity.total_tasks }}</td>
                     <td>                        
                         {% if user.is_superuser or user|has_group:"Admin" %}
                         <a href="{% url 'dashboard:activities:activity_Detail' activity.pk %}"   
                             class="btn btn-primary btn-xs" title="{% translate 'View' %}">
-                            <span class="_web">View</span>
+                            <span class="_web">Détails</span>
                             <span class="_mobile"><i class="fa fa-eye"></i></span>
                         </a>
                         <a href="{% url 'dashboard:activities:update' activity.pk %}"
                             class="btn btn-primary btn-xs" title="{% translate 'Edit' %}">
-                            <span class="_web">Edit</span>
+                            <span class="_web">Éditer</span>
                             <span class="_mobile"><i class="fa fa-user"></i></span>
                         </a>
                         <a href="{% url 'dashboard:activities:delete' activity.pk %}"
                             class="btn btn-sm btn-danger" title="{% translate 'Delete' %}">
-                            <span class="_web">Delete</span>
+                            <span class="_web">Supprimer</span>
                             <span class="_mobile"><i class="fa fa-edit"></i></span>
                         </a>
                         {% endif %}

@@ -66,7 +66,7 @@ msgstr "Facilitateur communautaire"
 #: .\authentication\models.py:191 .\dashboard\facilitators\views.py:30
 #: .\dashboard\facilitators\views.py:234 .\dashboard\facilitators\views.py:423
 #: .\dashboard\facilitators\views.py:462
-#: .\dashboard\templates\layouts\sidebar.html:30
+#: .\dashboard\templates\layouts\sidebar.html:
 msgid "Facilitators"
 msgstr "Facilitateurs communautaires"
 
@@ -124,7 +124,7 @@ msgid "diagnostics"
 msgstr "diagnostics"
 
 #: .\dashboard\facilitators\forms.py:76
-msgid "The two password fields didn’t match."
+msgid "The two password fields didn't match."
 msgstr "Les deux champs du mot de passe ne correspondent pas."
 
 #: .\dashboard\facilitators\forms.py:77 .\dashboard\facilitators\forms.py:152
@@ -139,11 +139,13 @@ msgstr "Au moins un niveau administratif est requis."
 msgid "Password confirmation"
 msgstr "Confirmation du mot de passe"
 
-#: .\dashboard\facilitators\forms.py
+#: .\dashboard\facilitators\forms.py:
+#: .\dashboard\templates\facilitators\facilitator_list.html:10
 msgid "Username"
 msgstr "Nom d'utilisateur"
 
-#: .\dashboard\facilitators\forms.py
+#: .\dashboard\templates\facilitators\facilitator_list.html:9
+#: .\dashboard\facilitators\forms.py:
 msgid "Name"
 msgstr "Nom"
 
@@ -286,14 +288,6 @@ msgstr "ENREGISTRER"
 #: .\dashboard\templates\facilitators\update.html:131
 msgid "Click to select location"
 msgstr "Cliquez pour sélectionner un lieu"
-
-#: .\dashboard\templates\facilitators\facilitator_list.html:9
-msgid "Name"
-msgstr "Nom"
-
-#: .\dashboard\templates\facilitators\facilitator_list.html:10
-msgid "Username"
-msgstr "Nom d'utilisateur"
 
 #: .\dashboard\templates\facilitators\facilitator_list.html:11
 msgid "Type"

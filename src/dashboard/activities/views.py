@@ -88,7 +88,7 @@ class CreateActivityForm(
     PageMixin, LoginRequiredMixin, AdminPermissionRequiredMixin, generic.FormView
 ):
     template_name = "activities/create_activity.html"
-    title = gettext_lazy("Create Activity")
+    title = gettext_lazy("Créer une étape")
     active_level1 = "activities"
     form_class = ActivityForm
     success_url = reverse_lazy("dashboard:activities:list")
@@ -255,13 +255,18 @@ def activity_detail_view(request, id):
     try:
         activity = Activity.objects.get(id=id)
         tasks = list(Task.objects.filter(activity_id=activity.id).order_by("order"))
+        tasks_nbr = len(tasks)
     except Activity.DoesNotExist:
         raise Http404("Activity does not exist")
 
     return render(
         request,
         "activities/activity_detail.html",
-        context={"activity": activity, "tasks": tasks},
+        context={
+            "activity": activity,
+            "tasks": tasks,
+            "tasks_nbr": tasks_nbr,
+        },
     )
 
 

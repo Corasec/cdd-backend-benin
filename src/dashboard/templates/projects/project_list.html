@@ -23,7 +23,7 @@
                         {% if user.is_superuser or user|has_group:"Admin" %}
                         <a href="{% url 'dashboard:projects:update' project.pk %}"
                             class="btn btn-primary btn-xs" title="{% translate 'Edit' %}">
-                            <span class="_web">Editer</span>
+                            <span class="_web">Éditer</span>
                             <span class="_mobile"><i class="fa fa-edit"></i></span>
                         </a>
                         <a href="{% url 'dashboard:projects:delete' project.pk %}"

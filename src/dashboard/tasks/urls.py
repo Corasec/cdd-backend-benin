@@ -14,5 +14,5 @@ urlpatterns = [
     path("MoveUp/<int:id>", views.changeOrderUp, name="MoveUp"),
     path("MoveDown/<int:id>", views.changeOrderDown, name="MoveDown"),
     path("Detail/<int:id>", views.task_detail_view, name="task_detail"),
-    path("Detail/<int:id>", activityView.activity_detail_view, name="activity_Detail"),
+    # path("Detail/<int:id>", activityView.activity_detail_view, name="activity_Detail"),
 ]

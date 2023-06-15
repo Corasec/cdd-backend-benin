@@ -11,7 +11,6 @@
                 <th>{% translate 'Project' %}</th>
                 <th>{% translate 'Phase' %}</th>
                 <th>{% translate 'activity' %}</th>
-                <th>{% translate 'Couch Id' %}</th>
                 <th width="20%">{% translate 'Action' %}</th>
             </tr>
             </thead>
@@ -23,7 +22,6 @@
                     <td>{{ task.project }}</td>
                     <td>{{ task.phase }}</td>
                     <td>{{ task.activity }}</td>
-                    <td>{{ task.couch_id }}</td>
                     <td>
                         
                         {% if user.is_superuser or user|has_group:"Admin" %}

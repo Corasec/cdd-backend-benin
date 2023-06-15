@@ -299,5 +299,9 @@ def phase_detail_view(request, id):
     return render(
         request,
         "phases/phase_detail.html",
-        context={"phase": phase, "activities": activities, "nbr_activities": nbr_activities},
+        context={
+            "phase": phase,
+            "activities": activities,
+            "nbr_activities": nbr_activities,
+        },
     )

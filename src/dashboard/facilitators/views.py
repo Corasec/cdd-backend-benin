@@ -91,11 +91,16 @@ class FacilitatorListTableView(LoginRequiredMixin, generic.ListView):
             id_departement or id_commune or id_arrondissement or id_village
         ) and type_field:
             _type = None
-            if id_departement and type_field == strip_accents(ADMINISTRATIVE_LEVEL_TYPE.DÉPARTEMENT):
+            if id_departement and type_field == strip_accents(
+                ADMINISTRATIVE_LEVEL_TYPE.DÉPARTEMENT
+            ):
                 _type = ADMINISTRATIVE_LEVEL_TYPE.DÉPARTEMENT
             elif id_commune and type_field == ADMINISTRATIVE_LEVEL_TYPE.COMMUNE:
                 _type = ADMINISTRATIVE_LEVEL_TYPE.COMMUNE
-            elif id_arrondissement and type_field == ADMINISTRATIVE_LEVEL_TYPE.ARRONDISSEMENT:
+            elif (
+                id_arrondissement
+                and type_field == ADMINISTRATIVE_LEVEL_TYPE.ARRONDISSEMENT
+            ):
                 _type = ADMINISTRATIVE_LEVEL_TYPE.ARRONDISSEMENT
             elif id_village and type_field == ADMINISTRATIVE_LEVEL_TYPE.VILLAGE:
                 _type = ADMINISTRATIVE_LEVEL_TYPE.VILLAGE

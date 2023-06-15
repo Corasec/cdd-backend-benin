@@ -12,8 +12,8 @@ class TaskForm(forms.Form):
         "duplicated_task": _("An Task with this name is already registered."),
     }
     # choices = tuple(Project.objects.all().values_list())
-    name = forms.CharField()
-    description = forms.CharField()
+    name = forms.CharField(label="Nom")
+    description = forms.CharField(widget=forms.Textarea)
     # project = forms.ChoiceField(choices = [])
     # activity = forms.ChoiceField(choices = [])
     # order = forms.IntegerField()
@@ -39,8 +39,8 @@ class TaskForm(forms.Form):
 
 class UpdateTaskForm(forms.ModelForm):
     # choices = tuple(Project.objects.all().values_list())
-    name = forms.CharField()
-    description = forms.CharField()
+    name = forms.CharField(label="Nom")
+    description = forms.CharField(widget=forms.Textarea)
     # couch_id = forms.CharField(required=False, disabled=True)
     # activity = forms.ModelChoiceField(queryset=Activity.objects.distinct())
     # form = forms.JSONField(required=False)

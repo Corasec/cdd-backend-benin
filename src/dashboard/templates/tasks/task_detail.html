@@ -13,27 +13,27 @@
                                  {% translate 'Task Detail' %}<br>
                             </div>
                         </div>
-                         <p style="font-size: 16px !important;"><strong>Name:</strong> {{ task.name }}</p>
-                         <p style="font-size: 16px !important;"><strong>Order:</strong> {{ task.order }}</p>
+                         <p style="font-size: 16px !important;"><strong>Nom:</strong> {{ task.name }}</p>
+                         <p style="font-size: 16px !important;"><strong>Ordre:</strong> {{ task.order }}</p>
                          <p style="font-size: 16px !important;"><strong>Description:</strong> {{ task.description }}</p>
-                         <p style="font-size: 16px !important;"><strong>Project:</strong> {{ task.activity.phase.project.name }}</p>
+                         <p style="font-size: 16px !important;"><strong>Projet:</strong> {{ task.activity.phase.project.name }}</p>
                          <p style="font-size: 16px !important;"><strong>Phase:</strong> {{ task.activity.phase.name }}</p>
-                         <p style="font-size: 16px !important;"><strong>Activity:</strong> {{ task.activity.name }}</p>
-                         <p style="font-size: 16px !important;"><strong>Form:</strong> {{ task.form }}</p>
-                         <p style="font-size: 16px !important;"><strong>Couch Id:</strong> {{ task.couch_id }}</p>
+                         <p style="font-size: 16px !important;"><strong>Étape:</strong> {{ task.activity.name }}</p>
+                         <p style="font-size: 16px !important;"><strong>Formulaire(s):</strong> {{ task.form }}</p>
                     </div>
                 </div>       
                 {% if user.is_superuser or user|has_group:"Admin" %}
                 <div class="float-right mb-3">
-                    <a href="{% url 'dashboard:form_builder:create-form-type' task.pk %}" 
+                    {% comment %} <a href="{% url 'dashboard:form_builder:create-form-type' task.pk %}"  {% endcomment %}
+                    <a href="#"
                        class="btn btn-primary btn-sm rounded-xl">
                        <i class="fa fa-plus mr-2"></i>
-                       Create Form
+                       Créer un formulaire
                     </a>
                 </div>
                 <a href="{% url 'dashboard:tasks:task_detail' task.pk %}"
                     class="btn btn-primary btn-xs"
-                    title="{% translate 'Refresh' %}">
+                    title="{% translate 'Rafraîchir' %}">
                     <span class="_web">{% translate 'Refresh' %}</span>
                     <span class="_mobile"><i class="fa fa-eye"></i></span>
                 </a>
