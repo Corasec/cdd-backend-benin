@@ -116,7 +116,7 @@ class Phase(models.Model):
 #     "name": "Réunion cantonale",
 #     "order": 1,
 #     "description": "Participer à la réunion cantonale conduite par l’AADB",
-#     "attachments": [
+#     "capacity_attachments": [
 #         {
 #             "name": "tutorial.pdf",
 #             "url": "/attachments/1253a3516c4e88550768d719be04e43d/report.pdf",
@@ -184,8 +184,36 @@ class Activity(models.Model):
 #   "completed": false,
 #   "completed_date": "15-08-2022",
 #   "capacity_attachments": [],
-#   "attachments": [],
+#   "support_attachments": true,
+#   "attachments": [
+#     {
+#       "attachment": null,
+#       "name": "Télécharger le PV de la séance",
+#       "type": "image/jpeg",
+#       "order": 0
+#     },
+#     {
+#       "attachment": null,
+#       "name": "Télécharger le programme des réunions d'arrondissement",
+#       "type": "image/jpeg",
+#       "order": 1
+#     },
+#     {
+#       "attachment": null,
+#       "name": "Photo de la réunion",
+#       "type": "image/jpeg",
+#       "order": 2
+#     }
+#   ],
 #   "form": []
+#   ...
+# }
+#
+# "support_attachments" is not set by default and will
+# be added manually before synching
+#
+# "attachments" by default is empty and need to be fill
+# following the above example according to the given specifications
 class Task(models.Model):
     name = models.CharField(max_length=255)
     description = models.TextField()
