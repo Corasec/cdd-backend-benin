@@ -165,6 +165,8 @@ DATE_INPUT_FORMATS = [
 
 STATIC_URL = "static/"
 
+# STATIC_ROOT = BASE_DIR / "static/"
+
 STATICFILES_DIRS = [
     BASE_DIR / "static",
     BASE_DIR / "dashboard/static",
@@ -215,6 +217,8 @@ AWS_STORAGE_BUCKET_NAME = env("S3_BUCKET")
 AWS_ACCESS_KEY_ID = env("S3_ACCESS")
 
 AWS_SECRET_ACCESS_KEY = env("S3_SECRET")
+
+AWS_S3_ENDPOINT_URL = env("S3_ENDPOINT_URL")
 
 
 # Mapbox
