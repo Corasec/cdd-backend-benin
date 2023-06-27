@@ -1,0 +1,45 @@
+version: '3'
+services:
+  dango-app:
+    image: cosobenin/cdd-app:latest
+    restart: always
+    ports:
+      - '9000:9000'
+    network_mode: "host"
+    environment: # these variables are mapped from the .env file
+      SECRET_KEY: '${SECRET_KEY}'
+      ALLOWED_HOSTS: '${ALLOWED_HOSTS}'
+      DATABASE_URL: '${DATABASE_URL}'
+      NO_SQL_URL: '${NO_SQL_URL}'
+      NO_SQL_USER: '${NO_SQL_USER}'
+      NO_SQL_PASS: '${NO_SQL_PASS}'
+      S3_BUCKET: '${S3_BUCKET}'
+      S3_ACCESS: '${S3_ACCESS}'
+      S3_SECRET: '${S3_SECRET}'
+      KOBO_TOKEN: '${KOBO_TOKEN}'
+      MAPBOX_ACCESS_TOKEN: '${MAPBOX_ACCESS_TOKEN}'
+      DIAGNOSTIC_MAP_LATITUDE: '${DIAGNOSTIC_MAP_LATITUDE}'
+      DIAGNOSTIC_MAP_LONGITUDE: '${DIAGNOSTIC_MAP_LONGITUDE}'
+      DIAGNOSTIC_MAP_ZOOM: '${DIAGNOSTIC_MAP_ZOOM}'
+      DIAGNOSTIC_MAP_WS_BOUND: '${DIAGNOSTIC_MAP_WS_BOUND}'
+      DIAGNOSTIC_MAP_EN_BOUND: '${DIAGNOSTIC_MAP_EN_BOUND}'
+      DIAGNOSTIC_MAP_ISO_CODE: '${DIAGNOSTIC_MAP_ISO_CODE}'
+    volumes:
+      - static-content:/usr/appserver/static
+
+  nginx:
+    image: nginx:alpine
+    restart: always
+    command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
+    ports:
+      - '80:80'
+      - '443:443'
+    network_mode: "host"
+    volumes:
+      - ./data/nginx:/etc/nginx/conf.d
+      - static-content:/var/www/app/static
+    depends_on:
+      - dango-app
+
+volumes:
+  static-content:

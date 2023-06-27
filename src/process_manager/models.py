@@ -183,7 +183,12 @@ class Activity(models.Model):
 #   "description": "Lorem ipsum https://ee.kobotoolbox.org/x/HY43dHN4",
 #   "completed": false,
 #   "completed_date": "15-08-2022",
-#   "capacity_attachments": [],
+#   "capacity_attachments": [
+#     {
+#       "name": "Présentation du projet COSO.pdf",
+#       "url": "https://drive.google.com/file/................."
+#     },
+#   ],
 #   "support_attachments": true,
 #   "attachments": [
 #     {

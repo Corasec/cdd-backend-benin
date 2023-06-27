@@ -1,0 +1,10 @@
+.git
+.gitignore
+Dockerfile*
+docker-compose*
+README.md
+LICENSE
+.vscode
+venv*/
+.env
+local_settings.py
