@@ -8,6 +8,7 @@
             <tr>
                 <th width="27%">{% translate 'Name' %}</th>
                 <th width="27%">{% translate 'Username' %}</th>
+                <th width="10%">Rôle</th>
                 <th width="10%">{% translate 'Type' %}</th>
                 <th width="6%" title="{% translate 'Red: <10% ; Orange: <30% ; Purple: <50% ; Black: <70% ; Blue sky: <90% ; Blue: <100% ; Green: 100%' %}" >{% translate 'Percent' %}</th>
                 <th  width="30%" >{% translate 'Action' %}</th>
@@ -18,6 +19,7 @@
                 <tr>
                     <td>{{ facilitator.get_name_with_sex }}</td>
                     <td>{{ facilitator.username }}</td>
+                    <td>{{ facilitator.role }}</td>
                     <td>{{ facilitator.get_type|upper }}</td>
                     <td><span id="facilitator-percent-{{ facilitator.no_sql_db_name }}" 
                          title="{% translate 'Red: <10% ; Orange: <30% ; Purple: <50% ; Black: <70% ; Blue sky: <90% ; Blue: <100% ; Green: 100%' %}" >

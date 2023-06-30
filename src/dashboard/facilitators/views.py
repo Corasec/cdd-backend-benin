@@ -542,6 +542,7 @@ class CreateFacilitatorFormView(
             "email": data["email"],
             "phone": data["phone"],
             "sex": data["sex"],
+            "role": data["role"],
             "administrative_levels": data["administrative_levels"],
             "type": "facilitator",
         }
@@ -634,6 +635,7 @@ class UpdateFacilitatorView(
             "email": data["email"],
             "name": data["name"],
             "sex": data["sex"],
+            "role": data["role"],
             "administrative_levels": _administrative_levels,
         }
         nsc = NoSQLClient()

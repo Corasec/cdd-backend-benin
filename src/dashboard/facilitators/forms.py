@@ -12,6 +12,7 @@ from dashboard.utils import (
 )
 from no_sql_client import NoSQLClient
 from cdd.constants import ADMINISTRATIVE_LEVEL_TYPE
+from cdd.constants import AGENT_ROLE
 
 
 class FilterTaskForm(forms.Form):
@@ -130,6 +131,7 @@ class FacilitatorForm(forms.Form):
     administrative_level = forms.ChoiceField()
     administrative_levels = forms.JSONField(label="", required=False)
     sex = forms.ChoiceField(label="Genre", choices=(("M.", "M."), ("Mme", "Mme")))
+    role = forms.ChoiceField(label="Rôle", choices=AGENT_ROLE)
 
     def clean_password2(self):
         password1 = self.cleaned_data.get("password1")
@@ -190,6 +192,7 @@ class FacilitatorForm(forms.Form):
         print("widget region")
         self.fields["administrative_levels"].widget.attrs["class"] = "hidden"
         print("widget hidden")
+        self.initial["role"] = AGENT_ROLE.FC
 
 
 class UpdateFacilitatorForm(forms.ModelForm):
@@ -208,6 +211,7 @@ class UpdateFacilitatorForm(forms.ModelForm):
     administrative_level = forms.ChoiceField(required=False)
     administrative_levels = forms.JSONField(label="", required=False)
     sex = forms.ChoiceField(label="Genre", choices=(("M.", "M."), ("Mme", "Mme")))
+    role = forms.ChoiceField(label="Rôle", choices=AGENT_ROLE)
 
     def clean(self):
         administrative_levels = self.cleaned_data["administrative_levels"]
@@ -236,6 +240,7 @@ class UpdateFacilitatorForm(forms.ModelForm):
         self.fields["administrative_level"].choices = administrative_level_choices
         self.fields["administrative_level"].widget.attrs["class"] = "region"
         self.fields["administrative_levels"].widget.attrs["class"] = "hidden"
+        self.initial["role"] = AGENT_ROLE.FC
 
     class Meta:
         model = Facilitator

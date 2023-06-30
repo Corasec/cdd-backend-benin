@@ -15,7 +15,6 @@ RUN pip install -r requirements.txt
 
 # copy all the code
 COPY . .
-RUN rm cdd/local_settings.py
 
 EXPOSE 9000
 

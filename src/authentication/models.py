@@ -4,10 +4,14 @@ import time
 from django.contrib.auth.hashers import make_password
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+from cdd.constants import AGENT_ROLE
 
 from no_sql_client import NoSQLClient
 
 
+# this is the model for the agents that use the cdd mobile app
+# in Benin "facilitator" is just an agent role
+# we keep the name "facilitator" for the model for compatibility
 class Facilitator(models.Model):
     no_sql_user = models.CharField(max_length=150, unique=True)
     no_sql_pass = models.CharField(max_length=128)
@@ -15,6 +19,7 @@ class Facilitator(models.Model):
     username = models.CharField(max_length=150, unique=True, verbose_name=_("username"))
     password = models.CharField(max_length=128, verbose_name=_("password"))
     code = models.CharField(max_length=6, unique=True, verbose_name=_("code"))
+    role = models.CharField(max_length=32, choices=AGENT_ROLE, default=AGENT_ROLE.FC)
     active = models.BooleanField(default=False, verbose_name=_("active"))
     develop_mode = models.BooleanField(default=False, verbose_name=_("test mode"))
     training_mode = models.BooleanField(default=False, verbose_name=_("test mode"))
