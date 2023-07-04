@@ -5,6 +5,7 @@ from django.utils.translation import gettext_lazy as _
 
 from process_manager.models import Phase, Project, Activity, Task
 from no_sql_client import NoSQLClient
+from cdd.constants import AGENT_ROLE
 
 
 class TaskForm(forms.Form):
@@ -14,6 +15,9 @@ class TaskForm(forms.Form):
     # choices = tuple(Project.objects.all().values_list())
     name = forms.CharField(label="Nom")
     description = forms.CharField(widget=forms.Textarea)
+    manager_role = forms.ChoiceField(
+        label="Responsable", choices=AGENT_ROLE, initial=AGENT_ROLE.FC
+    )
     # project = forms.ChoiceField(choices = [])
     # activity = forms.ChoiceField(choices = [])
     # order = forms.IntegerField()
@@ -41,6 +45,7 @@ class UpdateTaskForm(forms.ModelForm):
     # choices = tuple(Project.objects.all().values_list())
     name = forms.CharField(label="Nom")
     description = forms.CharField(widget=forms.Textarea)
+    manager_role = forms.ChoiceField(label="Responsable", choices=AGENT_ROLE)
     # couch_id = forms.CharField(required=False, disabled=True)
     # activity = forms.ModelChoiceField(queryset=Activity.objects.distinct())
     # form = forms.JSONField(required=False)
@@ -55,4 +60,8 @@ class UpdateTaskForm(forms.ModelForm):
 
     class Meta:
         model = Task
-        fields = ["name", "description"]  # specify the fields to be displayed
+        fields = [
+            "name",
+            "description",
+            "manager_role",
+        ]  # specify the fields to be displayed

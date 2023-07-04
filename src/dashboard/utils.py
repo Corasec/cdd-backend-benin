@@ -265,14 +265,16 @@ def get_documents_by_type(db, _type, empty_choice=True, attrs={}):
 def create_task_all_facilitators(
     database, task_model, develop_mode=False, trainning_mode=False, no_sql_db=False
 ):
+    # get only facilitators suitables for the task
+    f_managers = Facilitator.objects.filter(role=task_model.manager_role)
     if no_sql_db:
-        facilitators = Facilitator.objects.filter(
+        facilitators = f_managers.filter(
             develop_mode=develop_mode,
             training_mode=trainning_mode,
             no_sql_db_name=no_sql_db,
         )
     else:
-        facilitators = Facilitator.objects.filter(
+        facilitators = f_managers.filter(
             develop_mode=develop_mode, training_mode=trainning_mode
         )
 
@@ -310,7 +312,7 @@ def create_task_all_facilitators(
             new_phase["sql_id"] = task_model.phase.id  # Add sql_id
             # fc_phase = facilitator_database.get_query_result(new_phase)[0]
 
-            # Search phase include id
+            # Search phase by id
             fc_phase = facilitator_database.get_query_result(
                 {
                     "administrative_level_id": administrative_level["id"],
@@ -319,8 +321,8 @@ def create_task_all_facilitators(
                     "sql_id": task_model.phase.id,
                 }
             )[0]
-            if len(fc_phase) < 1:  # if any phase find by "Search phase include id"
-                # Search phase include order
+            if len(fc_phase) < 1:  # if no phase find by "Search phase by id"
+                # Search phase by order
                 fc_phase = facilitator_database.get_query_result(
                     {
                         "administrative_level_id": administrative_level["id"],
@@ -330,7 +332,7 @@ def create_task_all_facilitators(
                     }
                 )[0]
 
-            # Check if the phase was found
+            # if the phase wasn't found
             if len(fc_phase) < 1:
                 # create the phase
                 nsc.create_document(facilitator_database, new_phase)
@@ -359,7 +361,7 @@ def create_task_all_facilitators(
 
             # fc_activity = facilitator_database.get_query_result(new_activity)[0]
 
-            # Search activity include id
+            # Search activity by id
             fc_activity = facilitator_database.get_query_result(
                 {
                     "administrative_level_id": administrative_level["id"],
@@ -369,10 +371,8 @@ def create_task_all_facilitators(
                     "sql_id": task_model.activity.id,
                 }
             )[0]
-            if (
-                len(fc_activity) < 1
-            ):  # if any activity find by "Search activity include id"
-                # Search activity include order
+            if len(fc_activity) < 1:  # if no activity find by "Search activity by id"
+                # Search activity by order
                 fc_activity = facilitator_database.get_query_result(
                     {
                         "administrative_level_id": administrative_level["id"],
@@ -428,8 +428,8 @@ def create_task_all_facilitators(
                     "sql_id": task_model.id,
                 }
             )[0]
-            if len(fc_task) < 1:  # if any task find by "Search task include id"
-                # Search task include order
+            if len(fc_task) < 1:  # if no task find by "Search task by id"
+                # Search task by order
                 fc_task = facilitator_database.get_query_result(
                     {
                         "administrative_level_id": administrative_level["id"],

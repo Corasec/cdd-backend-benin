@@ -7,6 +7,7 @@ from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.auth import get_user_model
 from django.forms.models import model_to_dict
 from rest_framework import serializers
+from cdd.constants import AGENT_ROLE
 
 
 # Create your models here.
@@ -126,6 +127,9 @@ class Phase(models.Model):
 #     "total_tasks": 4,
 #     "completed_tasks": 0
 # }
+
+
+# "activity" is named "étape" for benin
 class Activity(models.Model):
     name = models.CharField(max_length=255)
     description = models.TextField()
@@ -179,6 +183,7 @@ class Activity(models.Model):
 #   "administrative_level_id": "adml123",
 #   "administrative_level_name": "Sanloaga",
 #   "name": "Tarea 2",
+#   "manager_role": "FC",
 #   "order": 2,
 #   "description": "Lorem ipsum https://ee.kobotoolbox.org/x/HY43dHN4",
 #   "completed": false,
@@ -226,6 +231,9 @@ class Task(models.Model):
     phase = models.ForeignKey("Phase", on_delete=models.CASCADE)
     activity = models.ForeignKey("Activity", on_delete=models.CASCADE)
     order = models.IntegerField()
+    manager_role = models.CharField(
+        max_length=32, choices=AGENT_ROLE, default=AGENT_ROLE.FC
+    )
     form = models.JSONField(null=True, blank=True)
     couch_id = models.CharField(max_length=255, blank=True)
 
@@ -248,6 +256,7 @@ class Task(models.Model):
             "activity_id": self.activity.couch_id,
             "activity_name": self.activity.name,
             "name": self.name,
+            "manager_role": self.manager_role,
             "order": self.order,
             "description": self.description,
             "completed": False,

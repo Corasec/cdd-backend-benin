@@ -52,6 +52,7 @@ class TaskListTableView(LoginRequiredMixin, generic.ListView):
     #     return context
 
 
+# depracated for now
 class CreateTaskFormView(
     PageMixin, LoginRequiredMixin, AdminPermissionRequiredMixin, generic.FormView
 ):
@@ -178,10 +179,12 @@ class UpdateTaskView(
         task = form.save(commit=False)
         task.name = data["name"]
         task.description = data["description"]
+        task.manager_role = data["manager_role"]
         task.save()
         doc = {
             "name": data["name"],
             "description": data["description"],
+            "manager_role": data["manager_role"],
             "sql_id": task.id,
         }
         nsc = NoSQLClient()
@@ -229,6 +232,7 @@ class CreateTaskForm(
             phase=activity.phase,
             activity=activity,
             form=form,
+            manager_role=data["manager_role"],
         )
         task_count = 0
         task_count = Task.objects.filter(activity_id=activity.id).all().count()

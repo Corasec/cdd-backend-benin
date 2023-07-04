@@ -168,7 +168,7 @@ msgstr "Créer un agent"
 
 #: .\dashboard\facilitators\views.py:455
 msgid "Edit Facilitator"
-msgstr "Editer l'agent'"
+msgstr "Editer l'agent"
 
 #: .\dashboard\forms\forms.py:8
 msgid "Allowed file size less than or equal to 2 MB"

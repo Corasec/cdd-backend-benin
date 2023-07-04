@@ -534,7 +534,10 @@ class CreateFacilitatorFormView(
         data = form.cleaned_data
         password = make_password(data["password1"], salt=None, hasher="default")
         facilitator = Facilitator(
-            username=data["username"], password=password, active=True
+            username=data["username"],
+            password=password,
+            active=True,
+            role=data["role"],
         )
         facilitator.save(replicate_design=False)
         doc = {
@@ -593,14 +596,17 @@ class UpdateFacilitatorView(
         form = ctx.get("form")
         ctx.setdefault("facilitator_doc", self.doc)
         if self.doc:
-            if form:
-                for label, field in form.fields.items():
-                    try:
-                        form.fields[label].value = self.doc[label]
-                    except Exception as exc:
-                        pass
+            # if form:
+            #     for label, field in form.fields.items():
+            #         try:
+            #             if label == "role":
+            #                 pass
 
-                ctx.setdefault("form", form)
+            #             form.fields[label].value = self.doc[label]
+            #         except Exception as exc:
+            #             pass
+
+            #     ctx.setdefault("form", form)
             ctx.setdefault(
                 "facilitator_administrative_levels", self.doc["administrative_levels"]
             )

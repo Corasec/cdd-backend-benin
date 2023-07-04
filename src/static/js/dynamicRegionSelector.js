@@ -138,7 +138,7 @@ function loadNextLevelRegions(current_level, url, placeholder) {
 
                     let select_element = document.createElement('select');
                     select_element.className = 'form-control region';
-                    select_element.setAttribute("required", "");
+                    // select_element.setAttribute("required", "");
                     select_element.setAttribute('id', id_select);
                     div_element.appendChild(select_element);
 

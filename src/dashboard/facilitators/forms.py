@@ -162,6 +162,7 @@ class FacilitatorForm(forms.Form):
 
     def clean(self):
         administrative_levels = self.cleaned_data["administrative_levels"]
+        print("ad_lvl: ", administrative_levels)
         if not administrative_levels:
             raise forms.ValidationError(
                 self.error_messages["administrative_level_required"]
@@ -211,7 +212,6 @@ class UpdateFacilitatorForm(forms.ModelForm):
     administrative_level = forms.ChoiceField(required=False)
     administrative_levels = forms.JSONField(label="", required=False)
     sex = forms.ChoiceField(label="Genre", choices=(("M.", "M."), ("Mme", "Mme")))
-    role = forms.ChoiceField(label="Rôle", choices=AGENT_ROLE)
 
     def clean(self):
         administrative_levels = self.cleaned_data["administrative_levels"]
@@ -240,7 +240,6 @@ class UpdateFacilitatorForm(forms.ModelForm):
         self.fields["administrative_level"].choices = administrative_level_choices
         self.fields["administrative_level"].widget.attrs["class"] = "region"
         self.fields["administrative_levels"].widget.attrs["class"] = "hidden"
-        self.initial["role"] = AGENT_ROLE.FC
 
     class Meta:
         model = Facilitator
