@@ -262,6 +262,7 @@ class Task(models.Model):
             "completed": False,
             "completed_date": "",
             "capacity_attachments": [],
+            "support_attachments": False,
             "attachments": [],
             "form": form,
             "form_response": [],

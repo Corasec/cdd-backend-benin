@@ -25,6 +25,7 @@ function toggleSubmitButton() {
 
 function changeRegionTrigger(url, placeholder) {
     $(document).on("change", ".region", function () {
+        // console.log("this: ", $(this));
         loadNextLevelRegions($(this), url, placeholder);
     });
 }
@@ -109,7 +110,7 @@ $(document).on("click", ".remove-region", function () {
 
 function loadNextLevelRegions(current_level, url, placeholder) {
     let current_level_val = current_level.val();
-    //console.log('current_level_val para cargar proximo selector: ' + current_level_val);
+    console.log("current_level_val: ",current_level_val);
     if (current_level_val !== '') {
         let select_region = $(".region");
         select_region.attr('disabled', true);
@@ -121,6 +122,7 @@ function loadNextLevelRegions(current_level, url, placeholder) {
             },
             success: function (data) {
                 if (data.length > 0) {
+                    // console.log("current_level start:", current_level)
                     let id_select = 'id_' + slugify(data[0].administrative_level, '_');
                     let label = data[0].administrative_level.toUpperCase();
                     let child;
@@ -143,9 +145,10 @@ function loadNextLevelRegions(current_level, url, placeholder) {
                     div_element.appendChild(select_element);
 
                     new_input.appendChild(div_element);
-
+                    console.log("current_level aft:", current_level);
                     current_level.parent().parent().after(new_input);
                     child = current_level.closest('.form-group').next().find('.region');
+                    console.log("childish :", child);
                     child.select2({
                         allowClear: true,
                         placeholder: placeholder,

@@ -11,6 +11,7 @@ from cloudant.document import Document
 
 from administrativelevels import models as administrativelevels_models
 import unicodedata
+from cdd.constants import ADMINISTRATIVE_LEVEL_TYPE, AGENT_ROLE
 
 
 def structure_the_words(word):
@@ -303,6 +304,34 @@ def create_task_all_facilitators(
         for administrative_level in facilitator_administrative_levels[0][
             "administrative_levels"
         ]:
+            adm_database = nsc.get_db("administrative_levels")
+            adm_lvl = adm_database.get_query_result(
+                {"administrative_id": administrative_level["id"]}
+            )[0][0]
+            print("res: ", adm_lvl)
+            is_acsdcc = (facilitator.role == AGENT_ROLE.ACSDCC) and (
+                adm_lvl["administrative_level"] == ADMINISTRATIVE_LEVEL_TYPE.DÉPARTEMENT
+            )
+            is_fgb = (facilitator.role == AGENT_ROLE.FGB) and (
+                adm_lvl["administrative_level"] == ADMINISTRATIVE_LEVEL_TYPE.COMMUNE
+            )
+            is_sc = (facilitator.role == AGENT_ROLE.SC) and (
+                adm_lvl["administrative_level"]
+                == ADMINISTRATIVE_LEVEL_TYPE.ARRONDISSEMENT
+            )
+            is_ft = (facilitator.role == AGENT_ROLE.FT) and (
+                adm_lvl["administrative_level"]
+                == ADMINISTRATIVE_LEVEL_TYPE.ARRONDISSEMENT
+            )
+            is_fc = (facilitator.role == AGENT_ROLE.FC) and (
+                adm_lvl["administrative_level"] == ADMINISTRATIVE_LEVEL_TYPE.VILLAGE
+            )
+            is_valid_for_task = is_acsdcc or is_fgb or is_sc or is_ft or is_fc
+
+            if not is_valid_for_task:
+                print(f"Invalid task for {administrative_level['name']}")
+                continue
+
             # Get phase
             new_phase = phase[0].copy()
             del new_phase["_id"]
