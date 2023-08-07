@@ -1,11 +1,13 @@
 let ancestors = [];
 let selected_regions = [];
 let selected_regions_json = [];
+let region_long_name = [];
+let adv_level = ["Dep", "Com", "Arr", "vlg"]
 
 $("#id_administrative_level").val(null).trigger('change.select2');
 
 function toggleAddButton() {
-    if ($("select.region:last").val()) {
+    if ($("select.region:first").val()) {
         $('#add').removeClass('disabled');
     } else {
         $('#add').addClass('disabled');
@@ -23,30 +25,72 @@ function toggleSubmitButton() {
 
 function changeRegionTrigger(url, placeholder) {
     $(document).on("change", ".region", function () {
+        // console.log("this: ", $(this));
         loadNextLevelRegions($(this), url, placeholder);
     });
 }
 
-$(document).on("click", "#add", function () {
-    let selected_region = $("select.region:last");
+function addSelectedRegion(selected_region, regions, s_indice){
+    // console.log("selecting: ", selected_region);
     let administrative_id = selected_region.val();
-    selected_regions.push(administrative_id);
-    let region_name = $('#' + selected_region[0].id + ' option:selected').text();
-    let selected_region_json = {
-        "name": region_name,
-        "id": administrative_id
-    };
-    selected_regions_json.push(selected_region_json);
-    $("#id_administrative_levels").val(JSON.stringify(selected_regions_json));
-    $(this).addClass('disabled');
-    $('#' + administrative_id).prop('disabled', true);
-    let region_long_name = $("select.region").map(function () {
-        return this.options[this.selectedIndex].text;
-    }).get().reverse().join(", ");
-    let region_html = "<a class='tag mt-2' >" +
-        "<i value='" + administrative_id + "' class='fa fa-remove mr-2 link remove-region' title='Remove'></i>" +
-        region_long_name + "</a>";
-    $("#selected_regions").append(region_html);
+
+    // only add unique administrative level
+    if (administrative_id && selected_regions.indexOf(administrative_id) === -1){
+        selected_regions.push(administrative_id);
+        let region_name = $('#' + selected_region[0].id + ' option:selected').text();
+        // if (region_name && region_long_name.indexOf(region_name) === -1){
+        //     region_long_name.push(region_name);
+        // }
+        
+        
+        // for (let i=1; i< regions.length; i++){
+        //     previous_region = regions.eq(regions.index(selected_region) - i);
+        //     previous_region_name = $('#' + previous_region[0].id + ' option:selected').text() + " (" + adv_level[s_indice+i] + ")";
+        //     if (previous_region_name && region_long_name.indexOf(previous_region_name) === -1){
+        //         region_long_name.push(previous_region_name);
+        //     }
+        // }
+        let selected_region_json = {
+            "name": region_name,
+            "id": administrative_id
+        };
+        selected_regions_json.push(selected_region_json);
+        $("#id_administrative_levels").val(JSON.stringify(selected_regions_json));
+        // console.log("regions json", selected_regions_json);
+        $(this).addClass('disabled');
+        $('#' + administrative_id).prop('disabled', true);
+        // let rregion_long_name = $("select.region").map(function () {
+        //     return this.options[this.selectedIndex].text;
+        // }).get().reverse().join(", ");
+        // let rregion_long_name = region_long_name.join(", ");
+        // rregion_long_name.slice(0, rregion_long_name.indexOf(region_name) + region_name.length);
+        let region_html = "<a class='tag mt-2' >" +
+            "<i value='" + administrative_id + "' class='fa fa-remove mr-2 link remove-region' title='Remove'></i>" +
+            region_name + " (" + adv_level[s_indice] + ")" + "</a>";
+        $("#selected_regions").append(region_html);
+        region_long_name = []
+    }
+    // else {
+    //     alert("Niveau administratif déjà ajouter");
+    // }
+}
+
+$(document).on("click", "#add", function () {
+    // let selected_region = $("select.region:last");
+    // //// if last region not selected,
+    // //// add previous adminitrative level
+    // if(!selected_region.val()){
+    //     selected_region = $("select.region").eq(-2);
+    // }
+    // addSelectedRegion(selected_region)
+    var regions = $("select.region");
+    var total_regions = regions.length;
+    for (var s_indice = 0; s_indice < total_regions; s_indice++) {
+        addSelectedRegion($(regions.eq(s_indice)), regions, s_indice)
+    }
+    // regions.each(function() {
+    //     addSelectedRegion($(this), regions);
+    // });
     toggleSubmitButton();
 });
 
@@ -66,7 +110,7 @@ $(document).on("click", ".remove-region", function () {
 
 function loadNextLevelRegions(current_level, url, placeholder) {
     let current_level_val = current_level.val();
-    //console.log('current_level_val para cargar proximo selector: ' + current_level_val);
+    console.log("current_level_val: ",current_level_val);
     if (current_level_val !== '') {
         let select_region = $(".region");
         select_region.attr('disabled', true);
@@ -78,6 +122,7 @@ function loadNextLevelRegions(current_level, url, placeholder) {
             },
             success: function (data) {
                 if (data.length > 0) {
+                    // console.log("current_level start:", current_level);
                     let id_select = 'id_' + slugify(data[0].administrative_level, '_');
                     let label = data[0].administrative_level.toUpperCase();
                     let child;
@@ -95,14 +140,15 @@ function loadNextLevelRegions(current_level, url, placeholder) {
 
                     let select_element = document.createElement('select');
                     select_element.className = 'form-control region';
-                    select_element.setAttribute("required", "");
+                    // select_element.setAttribute("required", "");
                     select_element.setAttribute('id', id_select);
                     div_element.appendChild(select_element);
 
                     new_input.appendChild(div_element);
-
+                    console.log("current_level aft:", current_level);
                     current_level.parent().parent().after(new_input);
                     child = current_level.closest('.form-group').next().find('.region');
+                    console.log("childish :", child);
                     child.select2({
                         allowClear: true,
                         placeholder: placeholder,

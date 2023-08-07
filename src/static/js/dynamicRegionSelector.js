@@ -56,14 +56,14 @@ function addSelectedRegion(selected_region, regions, s_indice){
         };
         selected_regions_json.push(selected_region_json);
         $("#id_administrative_levels").val(JSON.stringify(selected_regions_json));
-        // console.log("regions json", selected_regions_json)
+        // console.log("regions json", selected_regions_json);
         $(this).addClass('disabled');
         $('#' + administrative_id).prop('disabled', true);
         // let rregion_long_name = $("select.region").map(function () {
         //     return this.options[this.selectedIndex].text;
         // }).get().reverse().join(", ");
         // let rregion_long_name = region_long_name.join(", ");
-        // rregion_long_name.slice(0, rregion_long_name.indexOf(region_name) + region_name.length)
+        // rregion_long_name.slice(0, rregion_long_name.indexOf(region_name) + region_name.length);
         let region_html = "<a class='tag mt-2' >" +
             "<i value='" + administrative_id + "' class='fa fa-remove mr-2 link remove-region' title='Remove'></i>" +
             region_name + " (" + adv_level[s_indice] + ")" + "</a>";
@@ -71,7 +71,7 @@ function addSelectedRegion(selected_region, regions, s_indice){
         region_long_name = []
     }
     // else {
-    //     alert("Niveau administratif déjà ajouter")
+    //     alert("Niveau administratif déjà ajouter"):
     // }
 }
 
@@ -80,7 +80,7 @@ $(document).on("click", "#add", function () {
     // //// if last region not selected,
     // //// add previous adminitrative level
     // if(!selected_region.val()){
-    //     selected_region = $("select.region").eq(-2)
+    //     selected_region = $("select.region").eq(-2);
     // }
     // addSelectedRegion(selected_region)
     var regions = $("select.region");
@@ -122,7 +122,7 @@ function loadNextLevelRegions(current_level, url, placeholder) {
             },
             success: function (data) {
                 if (data.length > 0) {
-                    // console.log("current_level start:", current_level)
+                    // console.log("current_level start:", current_level);
                     let id_select = 'id_' + slugify(data[0].administrative_level, '_');
                     let label = data[0].administrative_level.toUpperCase();
                     let child;

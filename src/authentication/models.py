@@ -1,6 +1,7 @@
 import secrets
 import time
-
+import uuid
+import base64
 from django.contrib.auth.hashers import make_password
 from django.db import models
 from django.utils.translation import gettext_lazy as _
@@ -18,6 +19,8 @@ class Facilitator(models.Model):
     no_sql_db_name = models.CharField(max_length=150, unique=True)
     username = models.CharField(max_length=150, unique=True, verbose_name=_("username"))
     password = models.CharField(max_length=128, verbose_name=_("password"))
+    # TO DO
+    # cleaner way to generate code by using uuid/shortuuid
     code = models.CharField(max_length=6, unique=True, verbose_name=_("code"))
     role = models.CharField(max_length=32, choices=AGENT_ROLE, default=AGENT_ROLE.FC)
     active = models.BooleanField(default=False, verbose_name=_("active"))
@@ -59,7 +62,7 @@ class Facilitator(models.Model):
             self.no_sql_db_name = f"facilitator_{self.no_sql_user}"
 
             if not self.code:
-                self.code = self.get_code(self.no_sql_user)
+                self.fill_code()
 
             if not self.password:
                 self.password = f"ChangeItNow{self.code}"
@@ -82,7 +85,7 @@ class Facilitator(models.Model):
 
     def create_without_no_sql_db(self, *args, **kwargs):
         if not self.code:
-            self.code = self.get_code(self.no_sql_user)
+            self.fill_code()
 
         if not self.password:
             self.password = f"ChangeItNow{self.code}"
@@ -99,7 +102,7 @@ class Facilitator(models.Model):
             self.no_sql_pass = secrets.token_urlsafe(no_sql_pass_length)
 
             if not self.code:
-                self.code = self.get_code(self.no_sql_user)
+                self.fill_code()
 
             nsc = NoSQLClient()
             nsc.create_user(self.no_sql_user, self.no_sql_pass)
@@ -116,7 +119,7 @@ class Facilitator(models.Model):
             self.set_no_sql_user()
 
             if not self.code:
-                self.code = self.get_code(self.no_sql_user)
+                self.fill_code()
 
             if not self.password:
                 self.password = f"ChangeItNow{self.code}"
@@ -142,10 +145,18 @@ class Facilitator(models.Model):
         super().delete(*args, **kwargs)
 
     @staticmethod
-    def get_code(seed):
-        import zlib
+    def get_code():
+        uuid_value = uuid.uuid4()
+        short_code = (
+            base64.urlsafe_b64encode(uuid_value.bytes[:6]).rstrip(b"=").decode("utf-8")
+        )
+        return short_code
 
-        return str(zlib.adler32(str(seed).encode("utf-8")))[:6]
+    def fill_code(self, *args, **kwargs):
+        code = self.get_code()
+        while Facilitator.objects.filter(code=self.get_code()).exists():
+            code = self.get_code()
+        self.code = code
 
     def get_name(self):
         try:
@@ -194,3 +205,11 @@ class Facilitator(models.Model):
     class Meta:
         verbose_name = _("Facilitator")
         verbose_name_plural = _("Facilitators")
+
+
+def generate_short_unique_code():
+    uuid_value = uuid.uuid4()
+    short_code = (
+        base64.urlsafe_b64encode(uuid_value.bytes[:6]).rstrip(b"=").decode("utf-8")
+    )
+    return short_code

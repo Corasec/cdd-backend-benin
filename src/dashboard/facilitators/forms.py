@@ -209,9 +209,16 @@ class UpdateFacilitatorForm(forms.ModelForm):
     email = forms.EmailField(required=False)
     phone = forms.CharField(required=False)
     name = forms.CharField(required=False)
+    # username = forms.CharField(label=_("Username"), required=False)
     administrative_level = forms.ChoiceField(required=False)
     administrative_levels = forms.JSONField(label="", required=False)
     sex = forms.ChoiceField(label="Genre", choices=(("M.", "M."), ("Mme", "Mme")))
+
+    def clean_username(self):
+        username = self.cleaned_data["username"]
+        if Facilitator.objects.filter(username=username).exists():
+            self.add_error("username", self.error_messages["duplicated_username"])
+        return username
 
     def clean(self):
         administrative_levels = self.cleaned_data["administrative_levels"]
