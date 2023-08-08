@@ -21,7 +21,7 @@ class Facilitator(models.Model):
     password = models.CharField(max_length=128, verbose_name=_("password"))
     # TO DO
     # cleaner way to generate code by using uuid/shortuuid
-    code = models.CharField(max_length=6, unique=True, verbose_name=_("code"))
+    code = models.CharField(max_length=32, unique=True, verbose_name=_("code"))
     role = models.CharField(max_length=32, choices=AGENT_ROLE, default=AGENT_ROLE.FC)
     active = models.BooleanField(default=False, verbose_name=_("active"))
     develop_mode = models.BooleanField(default=False, verbose_name=_("test mode"))
@@ -49,7 +49,7 @@ class Facilitator(models.Model):
         return super().save(*args, **kwargs)
 
     def save(self, *args, **kwargs):
-        replicate_design = True
+        replicate_design = False
         if "replicate_design" in kwargs:
             replicate_design = kwargs.pop("replicate_design")
 

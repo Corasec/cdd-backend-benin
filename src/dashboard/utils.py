@@ -71,6 +71,20 @@ def get_administrative_levels_by_level(administrative_levels_db, level=None):
     return data
 
 
+def get_administrative_levels_by_level_and_name(
+    administrative_levels_db, level, name, empty_choice=True, attrs={}
+):
+    filters = {
+        "type": "administrative_level",
+        "administrative_level": level,
+        "name": name,
+    }
+    for attr, value in attrs.items():
+        filters[attr] = value
+    query_result = administrative_levels_db.get_query_result(filters)
+    return query_result
+
+
 def get_administrative_levels_by_type(
     administrative_levels_db, level, empty_choice=True, attrs={}
 ):
