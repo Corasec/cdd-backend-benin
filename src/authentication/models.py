@@ -202,6 +202,29 @@ class Facilitator(models.Model):
         else:
             return "deploy"
 
+    def get_tasks_completion(self):
+        try:
+            nsc = NoSQLClient()
+            facilitator_database = nsc.get_db(self.no_sql_db_name)
+            total_tasks_completed = len(
+                facilitator_database.get_query_result(
+                    {"type": "task", "completed": True}
+                )[:]
+            )
+            total_tasks_uncompleted = len(
+                facilitator_database.get_query_result(
+                    {"type": "task", "completed": False}
+                )[:]
+            )
+            total_tasks = total_tasks_completed + total_tasks_uncompleted
+
+            percent = (
+                ((total_tasks_completed / total_tasks) * 100) if total_tasks else 0
+            )
+            return round(percent, 2)
+        except Exception as e:
+            return None
+
     class Meta:
         verbose_name = _("Facilitator")
         verbose_name_plural = _("Facilitators")

@@ -23,7 +23,6 @@
                     <td>{{ task.phase }}</td>
                     <td>{{ task.activity }}</td>
                     <td>
-                        
                         {% if user.is_superuser or user|has_group:"Admin" %}
                         <a href="{% url 'dashboard:tasks:update' task.pk %}"
                             class="btn btn-primary btn-xs" title="{% translate 'Edit' %}">

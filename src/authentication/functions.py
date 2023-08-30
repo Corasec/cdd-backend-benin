@@ -385,3 +385,15 @@ def save_agents_not_yet_fc_csv_datas_to_db(agent_file, sheet="Nouveaux") -> str:
         message = "A problem has occurred! Some element(s) have not been saved!"
 
     return message
+
+
+def change_facilitator_default_password(develop_mode=False, training_mode=False):
+    facilitators = Facilitator.objects.filter(
+        develop_mode=develop_mode, training_mode=training_mode
+    )
+    for facilitator in facilitators:
+        facilitator.password = make_password(
+            "passwordexample", salt=None, hasher="default"
+        )
+        facilitator.simple_save()
+    print("passwords changed succesfully")

@@ -5,7 +5,7 @@
     <div class="row">
         <div class="col-12">
             
-            {% if user.is_superuser or user|has_group:"Admin" %}
+            {% if is_admin %}
             <div class="float-right mb-3">
                 <a href="{% url 'dashboard:facilitators:create' %}"
                 class="btn btn-primary btn-sm rounded-xl">

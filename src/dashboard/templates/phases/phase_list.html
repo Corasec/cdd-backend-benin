@@ -17,13 +17,12 @@
                     <td>{{ phase.order }}</td>
                     <td>{{ phase.name }}</td>                    
                     <td>
-                        
-                        {% if user.is_superuser or user|has_group:"Admin" %}
                         <a href="{% url 'dashboard:phases:phase_Detail' phase.pk %}"
                             class="btn btn-primary btn-xs" title="{% translate 'View' %}">
                             <span class="_web">Détails</span>
                             <span class="_mobile"><i class="fa fa-eye"></i></span>
                         </a>
+                        {% if user.is_superuser or user|has_group:"Admin" %}
                         <a href="{% url 'dashboard:phases:update' phase.pk %}"
                             class="btn btn-primary btn-xs" title="{% translate 'Edit' %}">
                             <span class="_web">Éditer</span>

@@ -65,42 +65,42 @@
                             <td>{{ task.order }}</td>
                             <td>{{ task.name }}</td>
                             <td>
-                                
-                                {% if user.is_superuser or user|has_group:"Admin" %}
                                 <a href="{% url 'dashboard:tasks:task_detail' task.pk %}"   
                                     class="btn btn-primary btn-xs" title="{% translate 'View' %}">
                                     <span class="_web">Détails</span>
                                     <span class="_mobile"><i class="fa fa-eye"></i></span>
                                 </a>
-                                <a href="{% url 'dashboard:tasks:update' task.pk %}"
-                                    class="btn btn-primary btn-xs" title="{% translate 'Edit' %}">
-                                    <span class="_web">Éditer</span>
-                                    <span class="_mobile"><i class="fa fa-user"></i></span>
-                                </a>
-                                {% if task.order > 1 %}
-                                <a href="{% url 'dashboard:tasks:MoveUp' task.pk %}"
-                                    class="btn btn-primary btn-xs" title="{% translate 'Move Up' %}">
-                                    <span class="_web">Monter</span>
-                                    <span class="_mobile"><i class="fa fa-arrow-up"></i></span>
-                                </a>                
-                                {% endif %}
-                                {% if task.order != tasks_nbr %}        
-                                <a href="{% url 'dashboard:tasks:MoveDown' task.pk %}"
-                                    class="btn btn-primary btn-xs" title="{% translate 'Move Down' %}">
-                                    <span class="_web">Descendre</span>
-                                    <span class="_mobile"><i class="fa fa-arrow-down"></i></span>
-                                </a>
-                                {% endif %}
-                                <a href="#"
-                                    class="btn btn-primary btn-xs" title="{% translate 'Move Down' %}">
-                                    <span class="_web">Formulaire</span>
-                                    <span class="_mobile"><i class="fa fa-arrow-down"></i></span>
-                                </a>
-                                <a href="{% url 'dashboard:tasks:delete' task.pk %}"
-                                    class="btn btn-sm btn-danger" title="{% translate 'Delete' %}">
-                                    <span class="_web">Supprimer</span>
-                                    <span class="_mobile"><i class="fa fa-edit"></i></span>
-                                </a>
+                                {% if user.is_superuser or user|has_group:"Admin" %}
+                                    
+                                    <a href="{% url 'dashboard:tasks:update' task.pk %}"
+                                        class="btn btn-primary btn-xs" title="{% translate 'Edit' %}">
+                                        <span class="_web">Éditer</span>
+                                        <span class="_mobile"><i class="fa fa-user"></i></span>
+                                    </a>
+                                    {% if task.order > 1 %}
+                                        <a href="{% url 'dashboard:tasks:MoveUp' task.pk %}"
+                                            class="btn btn-primary btn-xs" title="{% translate 'Move Up' %}">
+                                            <span class="_web">Monter</span>
+                                            <span class="_mobile"><i class="fa fa-arrow-up"></i></span>
+                                        </a>                
+                                    {% endif %}
+                                    {% if task.order != tasks_nbr %}        
+                                        <a href="{% url 'dashboard:tasks:MoveDown' task.pk %}"
+                                            class="btn btn-primary btn-xs" title="{% translate 'Move Down' %}">
+                                            <span class="_web">Descendre</span>
+                                            <span class="_mobile"><i class="fa fa-arrow-down"></i></span>
+                                        </a>
+                                    {% endif %}
+                                    <a href="#"
+                                        class="btn btn-primary btn-xs" title="{% translate 'Move Down' %}">
+                                        <span class="_web">Formulaire</span>
+                                        <span class="_mobile"><i class="fa fa-arrow-down"></i></span>
+                                    </a>
+                                    <a href="{% url 'dashboard:tasks:delete' task.pk %}"
+                                        class="btn btn-sm btn-danger" title="{% translate 'Delete' %}">
+                                        <span class="_web">Supprimer</span>
+                                        <span class="_mobile"><i class="fa fa-edit"></i></span>
+                                    </a>
                                 {% endif %}
                             </td>
                         </tr>

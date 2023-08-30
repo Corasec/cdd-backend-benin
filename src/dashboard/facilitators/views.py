@@ -48,9 +48,11 @@ class FacilitatorListView(PageMixin, LoginRequiredMixin, generic.ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["form"] = FilterFacilitatorForm()
-
         context["is_training"] = bool(self.request.GET.get("training", "0") != "0")
         context["is_develop"] = bool(self.request.GET.get("develop", "0") != "0")
+        user = self.request.user
+        is_admin = user.is_superuser or user.groups.filter(name="Admin").exists()
+        context["is_admin"] = is_admin
 
         return context
 
@@ -206,14 +208,21 @@ class FacilitatorListTableView(LoginRequiredMixin, generic.ListView):
             facilitators = Facilitator.objects.filter(
                 develop_mode=is_develop, training_mode=is_training
             )
+
+        for facilitator in facilitators:
+            facilitator.task_completion_status = facilitator.get_tasks_completion()
+
         return facilitators
 
     def get_queryset(self):
         return self.get_results()
 
-    # def get_context_data(self, **kwargs):
-    #     context = super().get_context_data(**kwargs)
-    #     return context
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user = self.request.user
+        is_admin = user.is_superuser or user.groups.filter(name="Admin").exists()
+        context["is_admin"] = is_admin
+        return context
 
 
 class FacilitatorsPercentListView(
