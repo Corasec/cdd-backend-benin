@@ -11,13 +11,14 @@
                 <th width="10%">Rôle</th>
                 <th width="10%">{% translate 'Type' %}</th>
                 <th width="6%" title="{% translate 'Red: <10% ; Orange: <30% ; Purple: <50% ; Black: <70% ; Blue sky: <90% ; Blue: <100% ; Green: 100%' %}" >{% translate 'Percent' %}</th>
+                {% comment %} <th width="10%">Dernière activité</th> {% endcomment %}
                 <th  width="30%" >{% translate 'Action' %}</th>
             </tr>
             </thead>
             <tbody>
             {% for facilitator in facilitators %}
                 <tr>
-                    <td>{{ facilitator.get_name_with_sex }}</td>
+                    <td>{{ facilitator.fullname }}</td>
                     <td>{{ facilitator.username }}</td>
                     <td>{{ facilitator.role }}</td>
                     <td>{{ facilitator.get_type|upper }}</td>
@@ -27,20 +28,15 @@
                         </span>
                     </td> {% endcomment %}
                     <td>
-                        <b style="color: {% if facilitator.task_completion_status < 10 %}red
-                                   {% elif facilitator.task_completion_status < 30 %}orange
-                                   {% elif facilitator.task_completion_status < 50 %}purple
-                                   {% elif facilitator.task_completion_status < 70 %}black
-                                   {% elif facilitator.task_completion_status < 90 %}#04e1e1
-                                   {% elif facilitator.task_completion_status < 100 %}blue
-                                   {% else %}green {% endif %};">
-                            {% if facilitator.task_completion_status < 10 %}
-                                0{{ facilitator.task_completion_status }}
-                            {% else %}
-                                {{ facilitator.task_completion_status }}
-                            {% endif %}%
-                        </b>
+                        {{ facilitator.task_completion_status }}
                     </td>
+                    {% comment %} <td>
+                        {% if facilitator.last_activity %}
+                            {{ facilitator.last_activity }}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td> {% endcomment %}
                     
                     <td>
                         <a href="{% url 'dashboard:facilitators:detail' facilitator.no_sql_db_name %}"
@@ -66,32 +62,43 @@
 
 <script type="text/javascript">
     $(document).ready(function () {
-        {% get_current_language as lang %}
-
+        
         let table = $('#table').DataTable({
-            language: {
-                url: '{% static 'AdminLTE/plugins/datatables/locale/lang.json' %}'.replace('lang', '{{ lang }}')
-            },
+
             dom: "ltipr",
             columnDefs: [
                 {
-                    targets: [1,5],
+                    targets: [1, 5],
                     orderable: false,
                     searchable: false,
+                },
+                {
+                    targets: 4,
+                    render: function (data, type, row) {
+                        var numericValue = parseFloat(data.replace(',', '.')); // Convert to float
+                        return '<b style="color: ' + getColor(numericValue) + ';">' + numericValue + "%" + '</b>';
+                    }
                 }
             ],
             lengthMenu: [100, 200, 300],
             pageLength: 100,
             order: [[0, 'desc']]
         });
+
         $('#search').on('keyup', function () {
             table.search($(this).val()).draw();
         });
-        
 
-
+        function getColor(value) {
+            if (value < 10) return 'red';
+            else if (value < 30) return 'orange';
+            else if (value < 50) return 'purple';
+            else if (value < 70) return 'black';
+            else if (value < 90) return '#04e1e1';
+            else if (value < 100) return 'blue';
+            else return 'green';
+        }
     });
-    
-
 </script>
+
 

@@ -15,12 +15,14 @@ from dashboard.facilitators.forms import (
     FilterTaskForm,
     UpdateFacilitatorForm,
     FilterFacilitatorForm,
+    FacilitatorRoleForm,
 )
 from dashboard.mixins import AJAXRequestMixin, PageMixin, JSONResponseMixin
 from no_sql_client import NoSQLClient
 from dashboard.utils import (
     get_all_docs_administrative_levels_by_type_and_administrative_id,
     get_all_docs_administrative_levels_by_type_and_parent_id,
+    get_all_docs_administrative_levels_by_type_and_parent_id_include_parent,
     strip_accents,
 )
 from authentication.permissions import (
@@ -28,7 +30,8 @@ from authentication.permissions import (
     SuperAdminPermissionRequiredMixin,
     AdminPermissionRequiredMixin,
 )
-from cdd.constants import ADMINISTRATIVE_LEVEL_TYPE
+from cdd.constants import ADMINISTRATIVE_LEVEL_TYPE, AGENT_TASKS_COMPLETION_TIMEOUT
+from django.core.cache import cache
 
 
 class FacilitatorListView(PageMixin, LoginRequiredMixin, generic.ListView):
@@ -53,6 +56,7 @@ class FacilitatorListView(PageMixin, LoginRequiredMixin, generic.ListView):
         user = self.request.user
         is_admin = user.is_superuser or user.groups.filter(name="Admin").exists()
         context["is_admin"] = is_admin
+        context["role_form"] = FacilitatorRoleForm()
 
         return context
 
@@ -87,12 +91,14 @@ class FacilitatorListTableView(LoginRequiredMixin, generic.ListView):
         id_commune = self.request.GET.get("id_commune")
         id_arrondissement = self.request.GET.get("id_arrondissement")
         id_village = self.request.GET.get("id_village")
+        id_role = self.request.GET.get("id_role")
         type_field = self.request.GET.get("type_field")
         facilitators = []
         if (
-            id_departement or id_commune or id_arrondissement or id_village
+            id_departement or id_commune or id_arrondissement or id_village or id_role
         ) and type_field:
             _type = None
+            parent_type = None
             if id_departement and type_field == strip_accents(
                 ADMINISTRATIVE_LEVEL_TYPE.DÉPARTEMENT
             ):
@@ -106,6 +112,7 @@ class FacilitatorListTableView(LoginRequiredMixin, generic.ListView):
                 _type = ADMINISTRATIVE_LEVEL_TYPE.ARRONDISSEMENT
             elif id_village and type_field == ADMINISTRATIVE_LEVEL_TYPE.VILLAGE:
                 _type = ADMINISTRATIVE_LEVEL_TYPE.VILLAGE
+                parent_type = ADMINISTRATIVE_LEVEL_TYPE.ARRONDISSEMENT
 
             nsc = NoSQLClient()
 
@@ -160,12 +167,14 @@ class FacilitatorListTableView(LoginRequiredMixin, generic.ListView):
                         :
                     ]
                 _type = ADMINISTRATIVE_LEVEL_TYPE.VILLAGE
+                parent_type = ADMINISTRATIVE_LEVEL_TYPE.ARRONDISSEMENT
                 for arrondissement in liste_arrondissements:
                     [
                         liste_villages.append(elt)
-                        for elt in get_all_docs_administrative_levels_by_type_and_parent_id(
+                        for elt in get_all_docs_administrative_levels_by_type_and_parent_id_include_parent(
                             administrative_levels,
                             _type,
+                            parent_type,
                             arrondissement["administrative_id"],
                         )[
                             :
@@ -180,9 +189,16 @@ class FacilitatorListTableView(LoginRequiredMixin, generic.ListView):
                         :
                     ]
 
-            for f in Facilitator.objects.filter(
-                develop_mode=False, training_mode=False
-            ):
+            if id_role:
+                facilitator_list = Facilitator.objects.filter(
+                    role=id_role, develop_mode=False, training_mode=False
+                )
+            else:
+                facilitator_list = Facilitator.objects.filter(
+                    develop_mode=False, training_mode=False
+                )
+            # facilitator_list = Facilitator.objects.filter(develop_mode=False, training_mode=False)
+            for f in facilitator_list:
                 already_count_facilitator = False
                 facilitator_db = nsc.get_db(f.no_sql_db_name)
                 query_result = facilitator_db.get_query_result({"type": "facilitator"})[
@@ -190,17 +206,29 @@ class FacilitatorListTableView(LoginRequiredMixin, generic.ListView):
                 ]
                 if query_result:
                     doc = query_result[0]
+                    i = 0
                     for _village in doc["administrative_levels"]:
+                        i += 1
                         if str(
                             _village["id"]
                         ).isdigit():  # Verify if id contain only digit
+                            j = 0
+
                             for village in liste_villages:
+                                j += 1
                                 if str(_village["id"]) == str(
                                     village["administrative_id"]
                                 ):
                                     if not already_count_facilitator:
                                         facilitators.append(f)
                                         already_count_facilitator = True
+                            if (
+                                id_role
+                                and not liste_villages
+                                and not already_count_facilitator
+                            ):
+                                facilitators.append(f)
+                                already_count_facilitator = True
         else:
             # facilitators = list(Facilitator.objects.all())
             is_training = bool(self.request.GET.get("is_training", "False") == "True")
@@ -208,9 +236,29 @@ class FacilitatorListTableView(LoginRequiredMixin, generic.ListView):
             facilitators = Facilitator.objects.filter(
                 develop_mode=is_develop, training_mode=is_training
             )
-
+        # caching tasks completion percentage
         for facilitator in facilitators:
-            facilitator.task_completion_status = facilitator.get_tasks_completion()
+            completion_cache_key = f"facilitator_task_completion_{facilitator.pk}"
+            task_completion_status = cache.get(completion_cache_key)
+            if task_completion_status is None:
+                task_completion_status = facilitator.get_tasks_completion()
+                cache.set(
+                    completion_cache_key,
+                    task_completion_status,
+                    timeout=AGENT_TASKS_COMPLETION_TIMEOUT,
+                )
+            facilitator.task_completion_status = task_completion_status
+
+            # last_activity_cache_key = f"facilitator_last_activity_{facilitator.pk}"
+            # last_activity = cache.get(last_activity_cache_key)
+            # if not last_activity:
+            #     last_activity = facilitator.get_last_activity()
+            #     cache.set(
+            #         last_activity_cache_key,
+            #         last_activity,
+            #         timeout=AGENT_TASKS_COMPLETION_TIMEOUT,
+            #     )
+            # facilitator.last_activity = last_activity
 
         return facilitators
 

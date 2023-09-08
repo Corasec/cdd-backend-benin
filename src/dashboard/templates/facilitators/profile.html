@@ -4,38 +4,38 @@
 {% block content %}
 
 <style>
-.fieldset {
-    border: solid 2px gray;
-    margin-bottom: 10px !important;
-}
-.fieldset fieldset .content {
-    width: 95% !important;
-}
-.fieldset fieldset .content:last-of-type {
-    margin-left: auto;
-}
-fieldset {
-  background-color: #eeeeee;
-}
+    .fieldset {
+        border: solid 2px gray;
+        margin-bottom: 10px !important;
+    }
+    .fieldset fieldset .content {
+        width: 95% !important;
+    }
+    .fieldset fieldset .content:last-of-type {
+        margin-left: auto;
+    }
+    fieldset {
+    background-color: #eeeeee;
+    }
 
-legend {
-  background-color: gray;
-  color: white;
-  padding: 5px 10px;
-}
+    legend {
+    background-color: gray;
+    color: white;
+    padding: 5px 10px;
+    }
 
-input {
-  margin: 5px;
-}
+    input {
+    margin: 5px;
+    }
 
-.attach-file a {
-    float: right !important;
-    margin-right: 45px !important;
-}
-.attach-file p {
-    margin-left: 15px !important;
-    margin-top: 8px !important;
-}
+    .attach-file a {
+        float: right !important;
+        margin-right: 45px !important;
+    }
+    .attach-file p {
+        margin-left: 15px !important;
+        margin-top: 8px !important;
+    }
 </style>
 
 
@@ -173,7 +173,7 @@ input {
                             <i class="fa fa-chevron-left fs20 align-middle"></i>
                         </a>
                         <div id="current-page" class="d-inline-block fs14 text-regular-family ml-4 mr-4"></div>
-                        <a id="next" class="btn text-primary hidden">
+                        <a id="next" class="btn text-primary ">
                             <i class="fa fa-chevron-right fs20 align-middle"></i>
                         </a>
                     </div>
@@ -224,10 +224,11 @@ input {
                     } else {
                         previous.hide();
                     }
-                    if (index + offset < total_tasks) {
-                        next.show();
-                    } else {
+
+                    if (index + offset >= total_tasks) {
                         next.hide();
+                    } else {
+                        next.show();
                     }
                     tasks.html(response);
                     if (response.trim()) {

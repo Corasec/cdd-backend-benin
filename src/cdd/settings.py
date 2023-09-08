@@ -241,3 +241,11 @@ DIAGNOSTIC_MAP_ISO_CODE = env("DIAGNOSTIC_MAP_ISO_CODE")
 
 # Global variables
 OTHER_LANGUAGES = True
+
+# simple cache setup. Consider redis for larger workloads
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+        "LOCATION": "unique-cache-key",
+    }
+}

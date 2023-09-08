@@ -12,6 +12,7 @@ from cloudant.document import Document
 from administrativelevels import models as administrativelevels_models
 import unicodedata
 from cdd.constants import ADMINISTRATIVE_LEVEL_TYPE, AGENT_ROLE
+from collections import Counter
 
 
 def structure_the_words(word):
@@ -43,6 +44,17 @@ def unix_time_millis(dt):
     return int((dt - epoch).total_seconds() * 1000)
 
 
+def clean_not_same_leveladministrative_levels(query_result):
+    level_counts = Counter(item["administrative_level"] for item in query_result)
+    most_common_level = level_counts.most_common(1)[0][0]
+    query_result = [
+        item
+        for item in query_result
+        if item["administrative_level"] == most_common_level
+    ]
+    return query_result
+
+
 def get_choices(query_result, id_key="id", text_key="name", empty_choice=True):
     # choices = list({(i[id_key], i[text_key]) for i in query_result})
     choices = []
@@ -67,6 +79,7 @@ def get_administrative_levels_by_level(administrative_levels_db, level=None):
             "parent_id": parent_id,
         }
     )
+    # data = clean_not_same_leveladministrative_levels(data)
     data = [doc for doc in data]
     return data
 
@@ -125,6 +138,25 @@ def get_all_docs_administrative_levels_by_type_and_administrative_id(
     return result
 
 
+def get_all_docs_administrative_levels_by_type_and_parent_id_include_parent(
+    administrative_levels, level, parent_level, parent_id
+):
+    result = []
+    for doc in administrative_levels:
+        doc = doc.get("doc")
+        if (
+            doc.get("type") == "administrative_level"
+            and doc.get("administrative_level") == level
+            and doc.get("parent_id") == parent_id
+        ) or (
+            doc.get("type") == "administrative_level"
+            and doc.get("administrative_level") == parent_level
+            and doc.get("administrative_id") == parent_id
+        ):
+            result.append(doc)
+    return result
+
+
 def get_administrative_level_choices(administrative_levels_db, empty_choice=True):
     country_id = administrative_levels_db.get_query_result(
         {
@@ -138,6 +170,10 @@ def get_administrative_level_choices(administrative_levels_db, empty_choice=True
             "parent_id": country_id,
         }
     )
+    # fix to make sure administrative levels in query_result
+    # are on the same level. Maybe irrelevant depending on the dataset
+    query_result = clean_not_same_leveladministrative_levels(query_result)
+
     return get_choices(query_result, "administrative_id", "name", empty_choice)
 
 
@@ -322,7 +358,7 @@ def create_task_all_facilitators(
             adm_lvl = adm_database.get_query_result(
                 {"administrative_id": administrative_level["id"]}
             )[0][0]
-            print("res: ", adm_lvl)
+            # print("res: ", adm_lvl)
             is_acsdcc = (facilitator.role == AGENT_ROLE.ACSDCC) and (
                 adm_lvl["administrative_level"] == ADMINISTRATIVE_LEVEL_TYPE.DÉPARTEMENT
             )
@@ -492,7 +528,7 @@ def create_task_all_facilitators(
                 nsc.create_document(facilitator_database, new_task)
                 # Get activity
                 fc_task = facilitator_database.get_query_result(new_task)[0]
-                print(fc_task)
+                # print(fc_task)
             else:
                 # Update task if it exists
                 _fc_task = fc_task[0].copy()
@@ -503,6 +539,9 @@ def create_task_all_facilitators(
                 _fc_task["administrative_level_name"] = administrative_level["name"]
                 if task_model.form:
                     _fc_task["form"] = task_model.form
+                    print("-----------------in form")
+                    # quick hack
+                    # TO DO: del and move the logic elsewhere
                 elif new_task.get("form"):
                     _fc_task["form"] = new_task.get("form")
                 _fc_task["attachments"] = new_task.get("attachments")
@@ -536,6 +575,12 @@ def create_task_all_facilitators(
                         ] = "0000-00-00 00:00:00"  # update doc by adding completed_date
 
                 # End management of the dates of the last update and completed
+                if (
+                    _fc_task["form_response"]
+                    and "profilVillageRenseigne" in _fc_task["form_response"][0].keys()
+                ):
+                    _fc_task["form_response"] = []
+                    print("-----------------in form_response")
 
                 nsc.update_cloudant_document(
                     facilitator_database,
@@ -544,7 +589,7 @@ def create_task_all_facilitators(
                     {"attachments": ["name"]},
                     fc_task[0]["attachments"],
                 )  # Update task for the facilitator
-                print(_fc_task)
+                print(_fc_task["form_response"])
             print(administrative_level)
 
 
@@ -717,6 +762,37 @@ def sync_tasks(develop_mode=False, training_mode=False, no_sql_db=False):
         #     create_task_one_facilitator("process_design", task, no_sql_db)
         # else:
         #     create_task_all_facilitators("process_design", task, develop_mode, training_mode)
+        create_task_all_facilitators(
+            "process_design", task, develop_mode, training_mode, no_sql_db
+        )
+
+
+def sync_last_n_tasks(
+    develop_mode=False, training_mode=False, no_sql_db=False, task_number=None
+):
+    if not task_number:
+        print("task_number not specify")
+        return
+
+    tasks = Task.objects.all().order_by("-id")[:task_number][::-1]
+    for task in tasks:
+        print("-----syncing: ", task.name)
+        create_task_all_facilitators(
+            "process_design", task, develop_mode, training_mode, no_sql_db
+        )
+
+
+# from dashboard.utils import sync_tasks_by_id
+# sync_tasks_by_id(no_sql_db="facilitator_1688731090", list_tasks_id=[13])
+def sync_tasks_by_id(
+    develop_mode=False, training_mode=False, no_sql_db=False, list_tasks_id=[]
+):
+    if not list_tasks_id:
+        print("no tasks id provided")
+        return
+    tasks = Task.objects.filter(id__in=list_tasks_id)
+    for task in tasks:
+        print("-----syncing: ", task.name)
         create_task_all_facilitators(
             "process_design", task, develop_mode, training_mode, no_sql_db
         )

@@ -14,3 +14,16 @@ AGENT_ROLE = Choices(
     ("FT", "FT", "Facilitateur technique"),
     ("FC", "FC", "Facilitateur communautaire"),
 )
+AGENT_ROLE_CH = (
+    ("", ""),
+    ("SC", "SC"),
+    ("FC", "FC"),
+    ("FGB", "FGB"),
+    ("FT", "FT"),
+    ("AC-SDCC", "AC-SDCC"),
+)
+FC_COVERAGE = ["village"]
+SC_FT_COVERAGE = ["arrondissement"]
+
+# set to 1 hour
+AGENT_TASKS_COMPLETION_TIMEOUT = 3600

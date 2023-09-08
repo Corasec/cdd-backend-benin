@@ -6,7 +6,8 @@ from django.contrib.auth.hashers import make_password
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from cdd.constants import AGENT_ROLE
-
+import random
+from datetime import datetime
 from no_sql_client import NoSQLClient
 
 
@@ -26,6 +27,8 @@ class Facilitator(models.Model):
     active = models.BooleanField(default=False, verbose_name=_("active"))
     develop_mode = models.BooleanField(default=False, verbose_name=_("test mode"))
     training_mode = models.BooleanField(default=False, verbose_name=_("test mode"))
+    # gender + facilitator fullname
+    fullname = models.CharField(max_length=255, blank=True, null=True)
 
     __current_password = None
 
@@ -144,6 +147,12 @@ class Facilitator(models.Model):
         # print(f'no_sql_db {no_sql_db}')
         super().delete(*args, **kwargs)
 
+    def populate_fullname(self, *args, **kwargs):
+        fullname = self.get_name_with_sex()
+        if fullname:
+            self.fullname = fullname
+            self.simple_save()
+
     @staticmethod
     def get_code():
         uuid_value = uuid.uuid4()
@@ -224,6 +233,32 @@ class Facilitator(models.Model):
             return round(percent, 2)
         except Exception as e:
             return None
+
+    def get_tasks_completion_test(self):
+        return round(random.uniform(0.00, 100.00), 2)
+
+    def get_last_activity(self):
+        nsc = NoSQLClient()
+        facilitator_database = nsc.get_db(self.no_sql_db_name)
+        facilitator_docs = facilitator_database.all_docs(include_docs=True)["rows"]
+        last_activity_date = "0000-00-00 00:00:00"
+        for doc in facilitator_docs:
+            doc = doc.get("doc")
+            if (
+                doc.get("type") == "task"
+                and doc.get("last_updated")
+                and last_activity_date < doc.get("last_updated")
+            ):
+                last_activity_date = doc.get("last_updated")
+
+        if last_activity_date == "0000-00-00 00:00:00":
+            last_activity_date = None
+        else:
+            last_activity_date = datetime.strptime(
+                last_activity_date, "%Y-%m-%d %H:%M:%S"
+            )
+
+        return last_activity_date
 
     class Meta:
         verbose_name = _("Facilitator")

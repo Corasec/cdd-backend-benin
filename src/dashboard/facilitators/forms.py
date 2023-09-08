@@ -2,17 +2,17 @@ from django import forms
 from django.contrib.auth import password_validation
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
-
+from django.shortcuts import get_object_or_404
 from authentication.models import Facilitator
 from dashboard.utils import (
     get_administrative_level_choices,
     get_administrative_levels_by_level,
     get_choices,
     strip_accents,
+    clean_not_same_leveladministrative_levels,
 )
 from no_sql_client import NoSQLClient
-from cdd.constants import ADMINISTRATIVE_LEVEL_TYPE
-from cdd.constants import AGENT_ROLE
+from cdd.constants import ADMINISTRATIVE_LEVEL_TYPE, AGENT_ROLE, AGENT_ROLE_CH
 
 
 class FilterTaskForm(forms.Form):
@@ -28,17 +28,63 @@ class FilterTaskForm(forms.Form):
 
         nsc = NoSQLClient()
         facilitator_db = nsc.get_db(facilitator_db_name)
+        facilitator = get_object_or_404(Facilitator, no_sql_db_name=facilitator_db_name)
 
         facilitator_docs = facilitator_db.all_docs(include_docs=True)["rows"]
-
+        adm_database = nsc.get_db("administrative_levels")
         query_result_phases = []
         query_result_activities = []
         query_result_tasks = []
         query_result_administrativelevels = []
+        new_query_result_administrativelevels = []
         for doc in facilitator_docs:
             doc = doc.get("doc")
             if doc.get("type") == "facilitator":
+                # todo: pop adm_lvl with no tasks
                 query_result_administrativelevels = doc.get("administrative_levels")
+                # exclude adm_level with no tasks
+                for i in range(len(query_result_administrativelevels)):
+                    adm_lvl = adm_database.get_query_result(
+                        {
+                            "administrative_id": query_result_administrativelevels[i][
+                                "id"
+                            ]
+                        }
+                    )[0][0]
+
+                    # Check conditions and decide whether to keep the element
+                    keep_element = False
+
+                    if facilitator.role == AGENT_ROLE.FC:
+                        if (
+                            adm_lvl["administrative_level"]
+                            == ADMINISTRATIVE_LEVEL_TYPE.VILLAGE
+                        ):
+                            keep_element = True
+                    elif facilitator.role in [AGENT_ROLE.SC, AGENT_ROLE.FT]:
+                        if (
+                            adm_lvl["administrative_level"]
+                            == ADMINISTRATIVE_LEVEL_TYPE.ARRONDISSEMENT
+                        ):
+                            keep_element = True
+                    elif facilitator.role == AGENT_ROLE.FGB:
+                        if (
+                            adm_lvl["administrative_level"]
+                            == ADMINISTRATIVE_LEVEL_TYPE.COMMUNE
+                        ):
+                            keep_element = True
+                    elif facilitator.role == AGENT_ROLE.ACSDCC:
+                        if (
+                            adm_lvl["administrative_level"]
+                            == ADMINISTRATIVE_LEVEL_TYPE.ÉPARTEMENT
+                        ):
+                            keep_element = True
+
+                    if keep_element:
+                        new_query_result_administrativelevels.append(
+                            query_result_administrativelevels[i]
+                        )
+
             elif doc.get("type") == "phase" and not self.check_name(
                 query_result_phases, doc
             ):
@@ -79,7 +125,7 @@ class FilterTaskForm(forms.Form):
             ),
         )
         query_result_administrativelevels = sorted(
-            query_result_administrativelevels, key=lambda obj: obj.get("name")
+            new_query_result_administrativelevels, key=lambda obj: obj.get("name")
         )
 
         self.fields["administrative_level"].widget.choices = get_choices(
@@ -175,9 +221,12 @@ class FacilitatorForm(forms.Form):
         nsc = NoSQLClient()
         administrative_levels_db = nsc.get_db("administrative_levels")
         print("connected to db")
-        label = get_administrative_levels_by_level(administrative_levels_db)[0][
-            "administrative_level"
-        ].upper()
+        query_administrative_levels = get_administrative_levels_by_level(
+            administrative_levels_db
+        )
+        label = clean_not_same_leveladministrative_levels(query_administrative_levels)[
+            0
+        ]["administrative_level"].upper()
         self.fields["administrative_level"].label = label
         print("extracted label")
 
@@ -233,7 +282,7 @@ class UpdateFacilitatorForm(forms.ModelForm):
 
         nsc = NoSQLClient()
         administrative_levels_db = nsc.get_db("administrative_levels")
-        label = get_administrative_levels_by_level(administrative_levels_db)[0][
+        label = get_administrative_levels_by_level(administrative_levels_db)[1][
             "administrative_level"
         ].upper()
         self.fields["administrative_level"].label = label
@@ -258,6 +307,7 @@ class FilterFacilitatorForm(forms.Form):
     commune = forms.ChoiceField()
     arrondissement = forms.ChoiceField()
     village = forms.ChoiceField()
+    role = forms.ChoiceField()
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -309,3 +359,11 @@ class FilterFacilitatorForm(forms.Form):
         self.fields[ADMINISTRATIVE_LEVEL_TYPE.VILLAGE].widget.choices = get_choices(
             query_result_villages, "administrative_id", "name"
         )
+
+        self.fields["role"].widget.choices = AGENT_ROLE_CH
+
+
+class FacilitatorRoleForm(forms.ModelForm):
+    class Meta:
+        model = Facilitator
+        fields = ["role"]

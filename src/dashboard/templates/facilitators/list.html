@@ -30,6 +30,9 @@
                     {% bootstrap_field form.village show_label=False %}
                 </div>
                 <div class="col-2">
+                    {% bootstrap_field form.role show_label=False %}
+                </div>
+                <div class="col-2">
                     <a class="btn fs12 text-bold-family text-primary pull-right p-0" style="margin-top: 8px;"
                        id="clear_all_filters">
                         {% translate "Clear all filters" %}
@@ -134,6 +137,7 @@
         let id_commune = $('#id_commune');
         let id_arrondissement = $('#id_arrondissement');
         let id_village = $('#id_village');
+        let id_role = $('#id_role');
 
         function loadFacilitators(type_field="") {
             spin.show();
@@ -145,6 +149,7 @@
                     id_commune: id_commune.val(),
                     id_arrondissement: id_arrondissement.val(),
                     id_village: id_village.val(),
+                    id_role : id_role.val(),
                     type_field: type_field,
                     is_training: "{{ is_training }}",
                     is_develop: "{{ is_develop }}"
@@ -179,7 +184,15 @@
                     }
                 }
             }
-            loadFacilitators(type_field);
+            if (type_field == "" && $('#id_role').val()){
+                type_field = $('#id_role').attr('id').split('_')[1];
+                loadFacilitators(type_field);
+                console.log("enter role");
+            }else{
+                console.log("type_field: ", type_field);
+                loadFacilitators(type_field);
+            }
+            
         });
 
         $("#clear_all_filters").on("click", function () {
@@ -203,12 +216,16 @@
             placeholder: "{% translate 'Commune' %}",
             allowClear: true,
         });
-         $("#id_arrondissement").select2({
+        $("#id_arrondissement").select2({
             placeholder: "{% translate 'Arrondissement' %}",
             allowClear: true,
         });
-         $("#id_village").select2({
+        $("#id_village").select2({
             placeholder: "{% translate 'Village' %}",
+            allowClear: true,
+        });
+        $("#id_role").select2({
+            placeholder: "Role",
             allowClear: true,
         });
 

@@ -78,6 +78,24 @@ def get_hour(date_time):
     return data
 
 
+def structure_empty_fields_labels(task):
+    fields_values = []
+    form = task.get("form")
+    form_lenght = len(form)
+
+    for i in range(0, form_lenght):
+        fields_options = form[i].get("options").get("fields")
+        dict_values = {}
+        for field, value in fields_options.items():
+            label = fields_options.get(field).get("label")
+            dict_values[field] = {
+                "name": label if label else utils_structure_the_words(field),
+                "value": "",
+            }
+        fields_values.append(dict_values)
+    return fields_values
+
+
 @register.filter(name="structureTheFields")
 def structure_the_fields(task):
     fields_values = {}
@@ -331,6 +349,8 @@ def structure_the_fields_labels(task):
             fields_values.append(dict_values)
             i += 1
     # print(fields_values)
+    else:
+        fields_values = structure_empty_fields_labels(task)
     return fields_values
 
 
@@ -377,3 +397,11 @@ def get_group_high(user):
         return gettext_lazy("Accountant").__str__()
 
     return gettext_lazy("User").__str__()
+
+
+@register.filter
+def to_float(value):
+    try:
+        return float(value)
+    except (ValueError, TypeError):
+        return 0.0

@@ -73,6 +73,7 @@
 
 {% block javascript %}
     {{ block.super }}
+    <script src="{% static 'js/dynamicRegionSelector.js' %}"></script>
     <script type="text/javascript">
         let get_ancestors_url = '{% url 'dashboard:administrative_levels:get_ancestor_administrative_levels' %}';
         let get_choices_url = '{% url 'dashboard:administrative_levels:get_choices_for_next_administrative_level' %}';
@@ -83,7 +84,7 @@
 {% endblock javascript %}
 
 {% block select2 %}
-    <script src="{% static 'js/dynamicRegionSelector.js' %}"></script>
+    
     <script type="text/javascript">
         $("#id_administrative_level").select2({
             placeholder: "{% translate 'Click to select location' %}",

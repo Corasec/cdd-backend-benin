@@ -205,6 +205,7 @@ function loadNextLevelRegions(current_level, url, placeholder) {
 
 function loadRegionSelectors(url) {
     let administrative_levels = $("#id_administrative_levels").val();
+    console.log("first load0: ", typeof(administrative_levels));
     $.ajax({
         type: 'GET',
         url: url,
