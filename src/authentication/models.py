@@ -7,7 +7,10 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 from cdd.constants import AGENT_ROLE
 import random
+import locale
 from datetime import datetime
+from collections import defaultdict
+from django.template.defaultfilters import date as _date
 from no_sql_client import NoSQLClient
 
 
@@ -241,24 +244,53 @@ class Facilitator(models.Model):
         nsc = NoSQLClient()
         facilitator_database = nsc.get_db(self.no_sql_db_name)
         facilitator_docs = facilitator_database.all_docs(include_docs=True)["rows"]
-        last_activity_date = "0000-00-00 00:00:00"
+        # arbitrary older date : January 1st 1100
+        base_older_date = datetime(1100, 1, 1)
+        # string representing default date in couchDB
+        default_date_string = "0000-00-00 00:00:00"
+        last_activity_date = base_older_date
         for doc in facilitator_docs:
             doc = doc.get("doc")
-            if (
-                doc.get("type") == "task"
-                and doc.get("last_updated")
-                and last_activity_date < doc.get("last_updated")
-            ):
-                last_activity_date = doc.get("last_updated")
+            if doc.get("type") == "task" and doc.get("last_updated"):
+                if doc.get("last_updated") == default_date_string:
+                    continue
 
-        if last_activity_date == "0000-00-00 00:00:00":
+                task_last_updated_date = datetime.strptime(
+                    doc.get("last_updated"), "%Y-%m-%d %H:%M:%S"
+                )
+                if last_activity_date < task_last_updated_date:
+                    last_activity_date = task_last_updated_date
+
+        if last_activity_date == base_older_date:
             last_activity_date = None
-        else:
-            last_activity_date = datetime.strptime(
-                last_activity_date, "%Y-%m-%d %H:%M:%S"
-            )
 
         return last_activity_date
+
+    def get_monthly_activity(self):
+        nsc = NoSQLClient()
+        facilitator_database = nsc.get_db(self.no_sql_db_name)
+        facilitator_docs = facilitator_database.all_docs(include_docs=True)["rows"]
+        # string representing default date in couchDB
+        default_date_string = "0000-00-00 00:00:00"
+
+        monthly_activity = defaultdict(int)
+
+        for doc in facilitator_docs:
+            doc = doc.get("doc")
+            if doc.get("type") == "task" and doc.get("last_updated"):
+                if doc.get("last_updated") == default_date_string:
+                    continue
+
+                last_updated_date = datetime.strptime(
+                    doc.get("last_updated"), "%Y-%m-%d %H:%M:%S"
+                )
+
+                # extract year and month from last_updated_date
+                year_month = f"{_date(last_updated_date, 'F')} {last_updated_date.year}"
+
+                monthly_activity[year_month] += 1
+
+        return dict(monthly_activity)
 
     class Meta:
         verbose_name = _("Facilitator")

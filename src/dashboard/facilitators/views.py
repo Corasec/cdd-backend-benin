@@ -568,6 +568,10 @@ class FacilitatorTaskListView(
             "dict_administrative_levels_with_infos"
         ] = dict_administrative_levels_with_infos
 
+        # add monthly activity
+        facilitator = Facilitator.objects.get(no_sql_db_name=self.facilitator_db_name)
+        context["monthly_activity"] = facilitator.get_monthly_activity()
+        print("monthly_activity", context["monthly_activity"])
         return context
 
 

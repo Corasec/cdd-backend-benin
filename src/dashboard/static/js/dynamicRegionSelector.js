@@ -71,7 +71,7 @@ function addSelectedRegion(selected_region, regions, s_indice){
         region_long_name = []
     }
     // else {
-    //     alert("Niveau administratif déjà ajouter");
+    //     alert("Niveau administratif déjà ajouter"):
     // }
 }
 
@@ -205,6 +205,7 @@ function loadNextLevelRegions(current_level, url, placeholder) {
 
 function loadRegionSelectors(url) {
     let administrative_levels = $("#id_administrative_levels").val();
+    console.log("first load0: ", typeof(administrative_levels));
     $.ajax({
         type: 'GET',
         url: url,
