@@ -219,20 +219,28 @@ class Facilitator(models.Model):
             nsc = NoSQLClient()
             facilitator_database = nsc.get_db(self.no_sql_db_name)
             total_tasks_completed = len(
-                facilitator_database.get_query_result(
-                    {"type": "task", "completed": True}
-                )[:]
+                list(
+                    facilitator_database.get_query_result(
+                        {"type": "task", "completed": True}
+                    )
+                )
             )
-            total_tasks_uncompleted = len(
-                facilitator_database.get_query_result(
-                    {"type": "task", "completed": False}
-                )[:]
-            )
-            total_tasks = total_tasks_completed + total_tasks_uncompleted
+            # total_tasks_uncompleted = len(
+            #     facilitator_database.get_query_result(
+            #         {"type": "task", "completed": False}
+            #     )[:]
+            # )
+            # total_tasks = total_tasks_completed + total_tasks_uncompleted
 
+            total_tasks = len(
+                list(facilitator_database.get_query_result({"type": "task"}))
+            )
             percent = (
                 ((total_tasks_completed / total_tasks) * 100) if total_tasks else 0
             )
+            if self.no_sql_db_name == "facilitator_1688731090":
+                print("completed : ", total_tasks_completed)
+                print("total : ", total_tasks)
             return round(percent, 2)
         except Exception as e:
             return None
