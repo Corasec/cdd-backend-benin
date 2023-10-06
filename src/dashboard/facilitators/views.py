@@ -486,11 +486,18 @@ class FacilitatorTaskListView(
                         break
                 _list.append(_)
 
+        # return sorted(
+        #     _list,
+        #     key=lambda obj: (
+        #         str(obj["phase_order"]) + str(obj["activity_order"]) + str(obj["order"])
+        #     ),
+        # )[index : index + offset]
+
+        # return sorted(_list, key=lambda obj: (obj["sql_id"]))[index : index + offset]
+
         return sorted(
             _list,
-            key=lambda obj: (
-                str(obj["phase_order"]) + str(obj["activity_order"]) + str(obj["order"])
-            ),
+            key=lambda obj: (obj["phase_order"], obj["activity_order"], obj["order"]),
         )[index : index + offset]
 
     def get_context_data(self, **kwargs):
