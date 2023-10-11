@@ -4,7 +4,6 @@
 
 ```bash
 cd src/
-docker build . -t cosobenin/cdd-app:latest
-docker push cosobenin/cdd-app:latest
+sudo docker build . -t cosobenin/cdd-app:latest
+sudo docker push cosobenin/cdd-app:latest
 ```
-
