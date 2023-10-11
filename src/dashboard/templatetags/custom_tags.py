@@ -369,6 +369,12 @@ def img_aws_s3_filter(uri):
     return uri.split("?")[0]
 
 
+@register.filter(name="docAWSS3Filter")
+def doc_aws_s3_filter(uri):
+    new_uri = uri.replace("https://", "")
+    return new_uri
+
+
 @register.filter(name="has_group")
 def has_group(user, group_name):
     return user.groups.filter(name=group_name).exists()

@@ -262,6 +262,7 @@ class UpdateFacilitatorForm(forms.ModelForm):
     administrative_level = forms.ChoiceField(required=False)
     administrative_levels = forms.JSONField(label="", required=False)
     sex = forms.ChoiceField(label="Genre", choices=(("M.", "M."), ("Mme", "Mme")))
+    # role = forms.ChoiceField(label="Rôle", choices=AGENT_ROLE)
 
     def clean_username(self):
         username = self.cleaned_data["username"]

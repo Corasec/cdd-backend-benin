@@ -167,11 +167,12 @@ DATE_INPUT_FORMATS = [
 
 STATIC_URL = "static/"
 
-# STATIC_ROOT = BASE_DIR / "static/"
+STATIC_ROOT = BASE_DIR / "static/"
 
 STATICFILES_DIRS = [
-    BASE_DIR / "static",
-    BASE_DIR / "dashboard/static",
+    # BASE_DIR / "static",
+    BASE_DIR
+    / "dashboard/static",
 ]
 
 MAX_UPLOAD_SIZE = 100 * 1024 * 1024  # 100MB

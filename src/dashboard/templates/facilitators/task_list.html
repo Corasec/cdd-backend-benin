@@ -325,15 +325,35 @@
                                 {% if attach.attachment.uri %}
                                     {% if "file:///data" in attach.attachment.uri %}
                                         <p><i class="fas fa-paperclip mr-2"></i>{% translate 'Not synchronized' %}</p>
-                                    {% elif ".pdf" in attach.attachment.uri or ".docx" in attach.attachment.uri or ".doc" in attach.attachment.uri %}
-                                        <a href="{{ attach.attachment.uri|imgAWSS3Filter }}" target="_blank" >
-                                            <iframe src="{{ attach.attachment.uri|imgAWSS3Filter }}" width="250" height="300"></iframe>
+                                    {% elif ".pdf" in attach.attachment.uri %}
+                                        <a href="{% url 'dashboard:facilitators:serve_minio_file' attach.attachment.uri|imgAWSS3Filter %}" target="_blank">
+                                        <div id="pdf-container-{{ forloop.counter }}" style="max-height: 300px; overflow: auto;"></div>
                                         </a>
+                                        <script>
+                                            const pdfUrl{{ forloop.counter }} = "{% url 'dashboard:facilitators:serve_minio_file' attach.attachment.uri|imgAWSS3Filter %}";
+                                            const container{{ forloop.counter }} = document.getElementById('pdf-container-{{ forloop.counter }}');
+
+                                            // Initialize PDF.js
+                                            pdfjsLib.getDocument(pdfUrl{{ forloop.counter }}).promise.then(function(pdf) {
+                                                const numPages = pdf.numPages;
+                                                for (let pageNumber = 1; pageNumber <= numPages; pageNumber++) {
+                                                    pdf.getPage(pageNumber).then(function(page) {
+                                                        const scale = 0.75;  // You can change this value
+                                                        const viewport = page.getViewport({ scale });
+                                                        const canvas = document.createElement('canvas');
+                                                        const context = canvas.getContext('2d');
+                                                        canvas.height = viewport.height;
+                                                        canvas.width = viewport.width;
+                                                        page.render({ canvasContext: context, viewport: viewport });
+                                                        container{{ forloop.counter }}.appendChild(canvas);
+                                                    });
+                                                }
+                                            });
+                                        </script>
+                                        <a href="{% url 'dashboard:facilitators:serve_minio_file' attach.attachment.uri|imgAWSS3Filter %}" target="_blank">Télécharger</a>
                                     {% else %}
-                                        <a href="{{ attach.attachment.uri|imgAWSS3Filter }}" target="_blank" >
-                                        <!-- class="btn btn-primary" data-toggle="modal" 
-                                        data-target="#item-attach-{{ forloop.counter }}" -->
-                                            <img src="{{ attach.attachment.uri|imgAWSS3Filter }}" width="200" height="200" />
+                                        <a href="{% url 'dashboard:facilitators:serve_minio_file' attach.attachment.uri|imgAWSS3Filter %}" target="_blank">
+                                            <img src="{% url 'dashboard:facilitators:serve_minio_file' attach.attachment.uri|imgAWSS3Filter %}" width="200" height="200" />
                                         </a>
                                     {% endif %}
                                 {% else %}
@@ -343,38 +363,16 @@
                             <div class="clearfix"></div>
                         </div>
                     {% endfor %}
+
                     {% endif %}
 
                 </div>
             </div>
 
-
-            
             </div>
         </div>
     </div>
-    <!-- End Modal -->
-    
-
-
-    {% comment %} {% for attach in task.attachments %}{% if attach.attachment.uri %}
-    <!-- Modal -->
-    <div class="modal fade" id="item-attach-{{ forloop.counter }}" tabindex="-2" role="dialog"
-        aria-labelledby="attach" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-            <div class="modal-content">
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-
-                <a href="{{ attach.attachment.uri|imgAWSS3Filter }}" class="btn btn-primary" target="_blank" >
-                    <img src="{{ attach.attachment.uri|imgAWSS3Filter }}" width="700" height="700" />
-                </a>
-            </div>
-        </div>
-    </div>
-    <!-- End Modal -->
-    {% endif %}{% endfor %} {% endcomment %}
+    <!-- End Modal attach.attachment.uri|imgAWSS3Filter-->
 
 {% empty %}
     <div class="text-center">

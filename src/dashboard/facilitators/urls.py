@@ -28,4 +28,9 @@ urlpatterns = [
         views.FacilitatorTaskListView.as_view(),
         name="task_list",
     ),
+    path(
+        "serve-minio-file/<path:file_path>/",
+        views.serve_minio_file,
+        name="serve_minio_file",
+    ),
 ]

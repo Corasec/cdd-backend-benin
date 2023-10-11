@@ -32,6 +32,9 @@ from authentication.permissions import (
 )
 from cdd.constants import ADMINISTRATIVE_LEVEL_TYPE, AGENT_TASKS_COMPLETION_TIMEOUT
 from django.core.cache import cache
+import requests
+from django.http import HttpResponse
+import urllib.parse
 
 
 class FacilitatorListView(PageMixin, LoginRequiredMixin, generic.ListView):
@@ -664,17 +667,14 @@ class UpdateFacilitatorView(
         form = ctx.get("form")
         ctx.setdefault("facilitator_doc", self.doc)
         if self.doc:
-            # if form:
-            #     for label, field in form.fields.items():
-            #         try:
-            #             if label == "role":
-            #                 pass
+            if form:
+                for label, field in form.fields.items():
+                    try:
+                        form.fields[label].value = self.doc[label]
+                    except Exception as exc:
+                        pass
 
-            #             form.fields[label].value = self.doc[label]
-            #         except Exception as exc:
-            #             pass
-
-            #     ctx.setdefault("form", form)
+                ctx.setdefault("form", form)
             ctx.setdefault(
                 "facilitator_administrative_levels", self.doc["administrative_levels"]
             )
@@ -709,9 +709,30 @@ class UpdateFacilitatorView(
             "email": data["email"],
             "name": data["name"],
             "sex": data["sex"],
-            "role": data["role"],
+            # "role": data["role"],
             "administrative_levels": _administrative_levels,
         }
         nsc = NoSQLClient()
         nsc.update_doc(self.facilitator_db, self.doc["_id"], doc)
         return redirect("dashboard:facilitators:list")
+
+
+def serve_minio_file(request, file_path):
+    # minio_base_url = "https://s29.q4cdn.com/175625835/files/doc_downloads/"  # Replace with your Minio base URL
+    # minio_url = minio_base_url + file_path
+    minio_url = file_path
+    try:
+        # Fetch the file from Minio
+        response = requests.get(minio_url)
+        content_type = response.headers.get("Content-Type", "application/octet-stream")
+
+        if response.status_code == 200:
+            # Serve the Minio file content as the response
+            response = HttpResponse(response.content, content_type=content_type)
+            # response['Content-Disposition'] = f'inline; filename="{file_path.split("/")[-1]}"'
+            # print("response['Content-Disposition']", response['Content-Disposition'])
+            return response
+        else:
+            return HttpResponse("File not found", status=404)
+    except requests.exceptions.RequestException as e:
+        return HttpResponse(f"Error: {str(e)}", status=500)
