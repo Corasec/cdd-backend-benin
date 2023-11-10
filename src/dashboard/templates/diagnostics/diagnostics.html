@@ -50,7 +50,7 @@
                                             <table id="table" class="table table-bordered">
                                                 <thead>
                                                 <tr>
-                                                    <th>{% translate 'Region' %}</th>
+                                                    <th>{% translate 'Département' %}</th>
                                                     <th>{% translate 'Task Completed' %}</th>
                                                     <th>{% translate 'Percentage' %}</th>
                                                 </tr>
@@ -98,6 +98,7 @@ padding: 0;
 {% block javascript %}
     {{ block.super }}
     <script src="{% static 'plugins/mapbox-gl-js/v2.6.1/mapbox-gl.js' %}"></script>
+    
     <script>
         let statistics_spin = $('#statistics-spin');
         let markers = [];
@@ -113,12 +114,12 @@ padding: 0;
             zoom: {{ zoom }}
         });
 
-        const bounds = [
-            {{ ws_bound }}, // [west, south]
-            {{ en_bound }}  // [east, north]
-        ];
+        //const bounds = [
+        //    {{ ws_bound }}, // [west, south]
+        //    {{ en_bound }}  // [east, north]
+        //];
         // Set the map's max bounds.
-        map.setMaxBounds(bounds);
+        //map.setMaxBounds(bounds);
 
         const geojson = {
             'type': 'FeatureCollection',
@@ -126,41 +127,54 @@ padding: 0;
                 {
                     'type': 'Feature',
                     'properties': {
-                        'message': 'Foo',
-                        'iconSize': [60, 60]
+                        'message': 'Alibori',
+                        'iconSize': [40, 40]
                     },
                     'geometry': {
                         'type': 'Point',
-                        'coordinates': [0.496008, 10.417] //0.356008, 10.417
+                        'coordinates': [2.9341, 11.118475] // (lng, lat)
                     },
-                    'id': "_savanes"
+                    'id': "_alibori"
                 },
                 {
                     'type': 'Feature',
                     'properties': {
-                        'message': 'Bar',
-                        'iconSize': [60, 60]
+                        'message': 'Atacora',
+                        'iconSize': [40, 40]
                     },
                     'geometry': {
                         'type': 'Point',
-                        'coordinates': [0.916667, 9.66667]
+                        'coordinates': [1.54021, 10.732918]
                     },
-                    'id': "_kara"
+                    'id': "_atacora"
                 },
                 {
                     'type': 'Feature',
                     'properties': {
-                        'message': 'Baz',
-                        'iconSize': [60, 60]
+                        'message': 'Borgou',
+                        'iconSize': [40, 40]
                     },
                     'geometry': {
                         'type': 'Point',
-                        'coordinates': [1.0033, 8.4833] //1.1333 8.9833
+                        'coordinates': [2.726733, 9.873935]
                     },
-                    'id': "_centrale"
+                    'id': "_borgou"
+                },
+                {
+                    'type': 'Feature',
+                    'properties': {
+                        'message': 'Donga',
+                        'iconSize': [40, 40]
+                    },
+                    'geometry': {
+                        'type': 'Point',
+                        'coordinates': [1.754443, 9.24592]
+                    },
+                    'id': "_donga"
                 }
             ]
         };
+
 
         map.on('load', function () {
 
@@ -199,6 +213,7 @@ padding: 0;
 
 
             {% comment %} let marker = new mapboxgl.Marker()
+                console.log("marker")
                 .setLngLat([0.356008, 10.417])
                 .setTitle("SAVANES")
                 .addTo(map);
@@ -243,10 +258,11 @@ padding: 0;
         {% for field in list_fields %}
 
             $(document).on("change", ("."+"{{ field }}"), function (event) {
-                
+                console.log("changed")
                 if(this.value){
                     let r = "select2-id_"+"{{ field }}"+"-container";
                     selected = document.getElementById(r).innerHTML.split("</span>")[1].toUpperCase();
+                    console.log("selected:", selected)
                     statistics_spin.show();
 
                     $.ajax({
@@ -257,15 +273,19 @@ padding: 0;
                             sql_id: this.value
                         },
                         success: function (data) {
+                            console.log("data: ", data);
                             
                             if(data.search_by_locality){
-                                document.getElementById("_savanes").innerHTML = ``;
-                                document.getElementById("_kara").innerHTML = ``;
-                                document.getElementById("_centrale").innerHTML = ``;
+                                // document.getElementById("_alibori").innerHTML = ``;
+                                // document.getElementById("_atacora").innerHTML = ``;
+                                // document.getElementById("_borgou").innerHTML = ``;
+                                // document.getElementById("_donga").innerHTML = ``;
                                 
-                                if(data.region){
-                                    document.getElementById(("_"+data.region.toLowerCase())).innerHTML = (data.percentage_tasks_completed).toFixed(2)+"%";
-                                }
+                                //if(data.departement){
+                                    //dep=document.getElementById(("_"+data.departement.toLowerCase()))
+                                    //dep.innerHTML = (data.percentage_tasks_completed).toFixed(2)+"%";
+                                   // console.log("dep:", dep)
+                                //}
                                 table.innerHTML = `
                                 <thead>
                                     <tr>
@@ -276,7 +296,7 @@ padding: 0;
                                     </thead>
 
                                     <tbody>
-                                        <tr title="Facilitator(s) : `+data.nbr_facilitators+` ; Task(s) : `+data.nbr_tasks+` ; Village(s) : `+data.nbr_villages+`" style="cursor: pointer;" >
+                                        <tr title="Agent(s) en activité : `+data.nbr_facilitators+` ; Nombre de tâche(s) : `+data.nbr_tasks+` ;Niveau(x) administratifs(s) : `+data.nbr_villages+`" style="cursor: pointer;" >
                                             <td>`+selected.toUpperCase()+`</td>
                                             <td>`+data.nbr_tasks_completed+`</td>
                                             <td>`+(data.percentage_tasks_completed).toFixed(2)+`%</td>
@@ -284,12 +304,13 @@ padding: 0;
                                     </tbody>
                                     <br />
                                 `;
-                                p.innerHTML = `<p>Facilitator(s) in activity : <b>`+data.nbr_facilitators+`</b> ; Task(s) in activity : <b>`+data.nbr_tasks+`</b> ; Village(s) : <b>`+data.nbr_villages+`</b></p>`;
+                                p.innerHTML = `<p>Agent(s) en activité : <b>`+data.nbr_facilitators+`</b> ; Nombre de tâche(s) : <b>`+data.nbr_tasks+`</b> ; Niveau(x) administratifs(s) : <b>`+data.nbr_villages+`</b></p>`;
                             }else{
+                                console.log("table: ", table)
                                 table.innerHTML = `
                                 <thead>
                                     <tr>
-                                        <th>{% translate 'Region' %}</th>
+                                        <th>{% translate 'Département' %}</th>
                                         <th>{% translate 'Task Completed' %}</th>
                                         <th>{% translate 'Percentage' %}</th>
                                     </tr>
@@ -299,8 +320,8 @@ padding: 0;
                                 `;
                                 
                                 let nbr_tasks = 0;
-                                for (const [key, value] of Object.entries(data.regions)) {
-                                    document.getElementById(("_"+key.toLowerCase())).innerHTML = (value.percentage_tasks_completed).toFixed(2)+"%";
+                                for (const [key, value] of Object.entries(data.departements)) {
+                                    //document.getElementById(("_"+key.toLowerCase())).innerHTML = (value.percentage_tasks_completed).toFixed(2)+"%";
                                     table.innerHTML += `
                                     <tr title="Task(s) : `+value.nbr_tasks+` ; Village(s) : `+value.nbr_tasks+`" style="cursor: pointer;" >
                                         <td>`+key+`</td>
@@ -315,13 +336,13 @@ padding: 0;
                                 </tbody>
                                 <br />
                                 `;
-                                p.innerHTML = `<p>Facilitator(s) in activity : <b>`+data.nbr_facilitators+`</b> ; Task(s) in activity : <b>`+nbr_tasks+`</b> ; Village(s) : <b>`+nbr_tasks+`</b></p>`;
+                                p.innerHTML = `<p>Agent(s) en activité : <b>`+data.nbr_facilitators+`</b> ; Nombre de tâche(s) : <b>`+nbr_tasks+`</b> ; Niveau(x) administratifs(s) : <b>`+nbr_tasks+`</b></p>`;
                             }
                             
-                            {% comment %} if (data.length > 0) {
-                                data = data.slice(1);
-                                data.push(administrative_levels);
-                            }   {% endcomment %}
+                            //{% comment %} if (data.length > 0) {
+                            //    data = data.slice(1);
+                            //    data.push(administrative_levels);
+                            //}   {% endcomment %}
 
                             statistics_spin.hide();
                         },
@@ -331,13 +352,14 @@ padding: 0;
                         }
                     });
                 }else{
-                    document.getElementById("_savanes").innerHTML = ``;
-                    document.getElementById("_kara").innerHTML = ``;
-                    document.getElementById("_centrale").innerHTML = ``;
+                    // document.getElementById("_alibori").innerHTML = ``;
+                    // document.getElementById("_atacora").innerHTML = ``;
+                    // document.getElementById("_borgou").innerHTML = ``;
+                    // document.getElementById("_donga").innerHTML = ``;
                     table.innerHTML = `
                     <thead>
                         <tr>
-                            <th>{% translate 'Region' %}</th>
+                            <th>{% translate 'Département' %}</th>
                             <th>{% translate 'Task Completed' %}</th>
                             <th>{% translate 'Percentage' %}</th>
                         </tr>

@@ -5,8 +5,10 @@ from dashboard.utils import (
     get_administrative_levels_by_type,
     get_documents_by_type,
     get_choices,
+    strip_accents,
 )
 from no_sql_client import NoSQLClient
+from cdd.constants import ADMINISTRATIVE_LEVEL_TYPE
 
 
 class DiagnosticsForm(forms.Form):
@@ -14,10 +16,9 @@ class DiagnosticsForm(forms.Form):
     activity = forms.ChoiceField(label="")
     task = forms.ChoiceField(label="")
 
-    region = forms.ChoiceField(label="")
-    prefecture = forms.ChoiceField(label="")
+    departement = forms.ChoiceField(label="")
     commune = forms.ChoiceField(label="")
-    canton = forms.ChoiceField(label="")
+    arrondissement = forms.ChoiceField(label="")
     village = forms.ChoiceField(label="")
 
     def __init__(self, *args, **kwargs):
@@ -37,17 +38,17 @@ class DiagnosticsForm(forms.Form):
                 self.fields[label].widget.attrs["class"] = label
             except Exception as exc:
                 pass
-
-        for label in ["region", "prefecture", "commune", "canton", "village"]:
+        # for label in ["département", "commune", "arrondissement", "village"]
+        for label in ADMINISTRATIVE_LEVEL_TYPE.values.keys():
             try:
                 administrative_level_choices = get_choices(
-                    get_administrative_levels_by_type(
-                        administrative_levels_db, label.title()
-                    ),
+                    get_administrative_levels_by_type(administrative_levels_db, label),
                     "administrative_id",
                     "name",
                     True,
                 )
+                if label == "département":
+                    label = "departement"
                 self.fields[label].widget.choices = administrative_level_choices
                 self.fields[label].choices = administrative_level_choices
                 self.fields[label].widget.attrs["class"] = label

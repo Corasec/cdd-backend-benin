@@ -7,6 +7,8 @@ ADMINISTRATIVE_LEVEL_TYPE = Choices(
     ("VILLAGE", "village", "Village"),
 )
 
+PROJECT_STRUCTURE = {"phase": "phase", "activity": "étape", "task": "tâche"}
+
 AGENT_ROLE = Choices(
     ("ACSDCC", "AC-SDCC", "Assistant coordonnateur spécialiste du dcc"),
     ("FGB", "FGB", "Formateur en gestion à la base"),

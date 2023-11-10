@@ -5,7 +5,7 @@ Run the App
 
 ## Setup
 
-Activate Python environment (use python 3)
+Set Python environment (use python 3)
 `python3 -m venv venv`
 
 Activate Python Environment

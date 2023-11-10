@@ -108,6 +108,28 @@ def get_administrative_levels_by_type(
     return query_result
 
 
+def get_administrative_levels_by_sql_id(
+    administrative_levels_db, sql_id, empty_choice=True, attrs={}
+):
+    filters = {"type": "administrative_level", "administrative_id": sql_id}
+    for attr, value in attrs.items():
+        filters[attr] = value
+    query_result = administrative_levels_db.get_query_result(filters)
+    return query_result
+
+
+def get_all_docs_administrative_levels_by_type(administrative_levels, level):
+    result = []
+    for doc in administrative_levels:
+        doc = doc.get("doc")
+        if (
+            doc.get("type") == "administrative_level"
+            and doc.get("administrative_level") == level
+        ):
+            result.append(doc)
+    return result
+
+
 def get_all_docs_administrative_levels_by_type_and_parent_id(
     administrative_levels, level, parent_id
 ):
@@ -223,6 +245,29 @@ def get_region_of_village_by_sql_id(administrative_levels_db, village_sql_id):
                 )
 
     return None
+
+
+def get_departement_of_administrative_level_by_sql_id(administrative_levels_db, sql_id):
+    departement = parent = None
+    adm_lvl = get_administrative_levels_by_sql_id(administrative_levels_db, sql_id)[:][
+        0
+    ]
+    if adm_lvl["administrative_level"] == ADMINISTRATIVE_LEVEL_TYPE.DÉPARTEMENT:
+        departement = adm_lvl
+    else:
+        parent = get_parent_administrative_level(
+            administrative_levels_db, adm_lvl["administrative_id"]
+        )
+        # keep fetching parent until it's a "département",
+        # using range to avoid potential infinite loop
+        for i in range(1, len(ADMINISTRATIVE_LEVEL_TYPE)):
+            if parent["administrative_level"] == ADMINISTRATIVE_LEVEL_TYPE.DÉPARTEMENT:
+                departement = parent
+                break
+            parent = get_parent_administrative_level(
+                administrative_levels_db, parent["administrative_id"]
+            )
+    return departement
 
 
 def get_documents_by_type(db, _type, empty_choice=True, attrs={}):

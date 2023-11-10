@@ -10,9 +10,12 @@ from dashboard.utils import (
     get_documents_by_type,
     get_administrative_levels_by_type,
     get_region_of_village_by_sql_id,
+    get_departement_of_administrative_level_by_sql_id,
     get_all_docs_administrative_levels_by_type_and_administrative_id,
     get_all_docs_administrative_levels_by_type_and_parent_id,
+    get_all_docs_administrative_levels_by_type,
 )
+from cdd.constants import ADMINISTRATIVE_LEVEL_TYPE
 from no_sql_client import NoSQLClient
 from authentication.models import Facilitator
 
@@ -41,12 +44,13 @@ class DashboardDiagnosticsCDDView(PageMixin, LoginRequiredMixin, FormView):
             "phase",
             "activity",
             "task",
-            "region",
-            "prefecture",
+            "departement",
             "commune",
-            "canton",
+            "arrondissement",
             "village",
         ]
+
+        # mapbox coordinate conf for departement
 
         return context
 
@@ -71,23 +75,30 @@ class GetTasksDiagnosticsView(
 ):
     def get(self, request, *args, **kwargs):
         _type = request.GET.get("type")
+        if _type == "departement":
+            _type = "département"
+
         type_header = _type
+        print("type : ", _type)
         sql_id = request.GET.get("sql_id")
         if not sql_id:
-            raise Exception("The value of the element must be not null!!!")
+            raise Exception("The value of the element must not be null!!!")
         nsc = NoSQLClient()
         administrative_levels_db = nsc.get_db("administrative_levels")
         print("")
-        print("NEW")
+        print("GetTasksDiagnosticsView")
+        administrative_levels = administrative_levels_db.all_docs(include_docs=True)[
+            "rows"
+        ]
         liste_villages = []
         nbr_tasks = 0
         nbr_tasks_completed = 0
         percentage_tasks_completed = 0
         nbr_facilitators = 0
-        nbr_villages = 0
+        nbr_villages = nbr_not_village = nbr_all_adm_lvl = 0
         search_by_locality = False
         already_count_facilitator = False
-        _region = None
+        _departement = None
         regions = {
             "SAVANES": {
                 "nbr_tasks": 0,
@@ -105,96 +116,89 @@ class GetTasksDiagnosticsView(
                 "percentage_tasks_completed": 0,
             },
         }
-
-        if _type in ["region", "prefecture", "commune", "canton", "village"]:
+        list_departements = get_all_docs_administrative_levels_by_type(
+            administrative_levels, ADMINISTRATIVE_LEVEL_TYPE.DÉPARTEMENT
+        )
+        departements = {
+            elt["name"]: {
+                "nbr_tasks": 0,
+                "nbr_tasks_completed": 0,
+                "percentage_tasks_completed": 0,
+            }
+            for elt in list_departements
+        }
+        # _type in ["département", "commune", "arrondissement", "village"]
+        # ["region", "prefecture", "commune", "canton", "village"]
+        if _type in ADMINISTRATIVE_LEVEL_TYPE.values.keys():
             search_by_locality = True
-            liste_prefectures = []
+            liste_prefectures = []  ##
             liste_communes = []
-            liste_cantons = []
-            administrative_levels = administrative_levels_db.all_docs(
-                include_docs=True
-            )["rows"]
+            liste_cantons = []  ##
+            liste_arrondissements = []
 
-            if _type == "region":
-                region = (
+            # if _type == "region":
+            if _type == ADMINISTRATIVE_LEVEL_TYPE.DÉPARTEMENT:
+                departement = (
                     get_all_docs_administrative_levels_by_type_and_administrative_id(
-                        administrative_levels, _type.title(), sql_id
+                        administrative_levels, _type, sql_id
                     )
                 )
-                region = region[:][0]
-                _type = "prefecture"
-                liste_prefectures = (
+                departement = departement[:][0]
+                _type = ADMINISTRATIVE_LEVEL_TYPE.COMMUNE
+                liste_communes = (
                     get_all_docs_administrative_levels_by_type_and_parent_id(
                         administrative_levels,
-                        _type.title(),
-                        region["administrative_id"],
+                        _type,
+                        departement["administrative_id"],
                     )[:]
                 )
 
-            if _type == "prefecture":
-                if not liste_prefectures:
-                    liste_prefectures = get_all_docs_administrative_levels_by_type_and_administrative_id(
-                        administrative_levels, _type.title(), sql_id
-                    )[
-                        :
-                    ]
-                _type = "commune"
-                for prefecture in liste_prefectures:
-                    [
-                        liste_communes.append(elt)
-                        for elt in get_all_docs_administrative_levels_by_type_and_parent_id(
-                            administrative_levels,
-                            _type.title(),
-                            prefecture["administrative_id"],
-                        )[
-                            :
-                        ]
-                    ]
-
-            if _type == "commune":
+            # "prefecture"
+            if _type == ADMINISTRATIVE_LEVEL_TYPE.COMMUNE:
                 if not liste_communes:
                     liste_communes = get_all_docs_administrative_levels_by_type_and_administrative_id(
-                        administrative_levels, _type.title(), sql_id
+                        administrative_levels, _type, sql_id
                     )[
                         :
                     ]
-                _type = "canton"
+                _type = ADMINISTRATIVE_LEVEL_TYPE.ARRONDISSEMENT
                 for commune in liste_communes:
                     [
-                        liste_cantons.append(elt)
+                        liste_arrondissements.append(elt)
                         for elt in get_all_docs_administrative_levels_by_type_and_parent_id(
                             administrative_levels,
-                            _type.title(),
+                            _type,
                             commune["administrative_id"],
                         )[
                             :
                         ]
                     ]
 
-            if _type == "canton":
-                if not liste_cantons:
-                    liste_cantons = get_all_docs_administrative_levels_by_type_and_administrative_id(
-                        administrative_levels, _type.title(), sql_id
+            if _type == ADMINISTRATIVE_LEVEL_TYPE.ARRONDISSEMENT:
+                if not liste_arrondissements:
+                    liste_arrondissements = get_all_docs_administrative_levels_by_type_and_administrative_id(
+                        administrative_levels, _type, sql_id
                     )[
                         :
                     ]
-                _type = "village"
-                for canton in liste_cantons:
+                _type = ADMINISTRATIVE_LEVEL_TYPE.VILLAGE
+                for arrondissement in liste_arrondissements:
                     [
                         liste_villages.append(elt)
                         for elt in get_all_docs_administrative_levels_by_type_and_parent_id(
                             administrative_levels,
-                            _type.title(),
-                            canton["administrative_id"],
+                            _type,
+                            arrondissement["administrative_id"],
                         )[
                             :
                         ]
                     ]
-
-            if _type == "village":
+            nbr_not_village = len(liste_arrondissements)
+            print("nbr_not_village : ", nbr_not_village)
+            if _type == ADMINISTRATIVE_LEVEL_TYPE.VILLAGE:
                 if not liste_villages:
                     liste_villages = get_all_docs_administrative_levels_by_type_and_administrative_id(
-                        administrative_levels, _type.title(), sql_id
+                        administrative_levels, _type, sql_id
                     )[
                         :
                     ]
@@ -235,9 +239,11 @@ class GetTasksDiagnosticsView(
                                                 nbr_tasks_completed += 1
                                             nbr_tasks += 1
 
-            # nbr_villages = len(liste_villages)
+            nbr_all_adm_lvl = len(liste_villages)
+            print("nbr_all_adm_lvl : ", nbr_all_adm_lvl)
+            nbr_villages = nbr_all_adm_lvl - nbr_not_village
             if nbr_villages > 0:
-                _region = get_region_of_village_by_sql_id(
+                _departement = get_departement_of_administrative_level_by_sql_id(
                     administrative_levels_db, liste_villages[0]["administrative_id"]
                 )
 
@@ -268,18 +274,20 @@ class GetTasksDiagnosticsView(
                                         nbr_facilitators += 1
                                         already_count_facilitator = True
 
-                                    _region = get_region_of_village_by_sql_id(
+                                    _departement = get_departement_of_administrative_level_by_sql_id(
                                         administrative_levels_db,
                                         _task["administrative_level_id"],
                                     )
-                                    if _region:
-                                        _region_name = _region["name"]
-                                        if regions.get(_region_name):
-                                            if _task["completed"]:
-                                                regions[_region_name][
-                                                    "nbr_tasks_completed"
-                                                ] += 1
-                                            regions[_region_name]["nbr_tasks"] += 1
+                                    if _departement:
+                                        _departement_name = _departement["name"]
+                                        # if regions.get(_region_name):
+                                        if _task["completed"]:
+                                            departements[_departement_name][
+                                                "nbr_tasks_completed"
+                                            ] += 1
+                                        departements[_departement_name][
+                                            "nbr_tasks"
+                                        ] += 1
 
             elif _type == "task":
                 for f in Facilitator.objects.filter(
@@ -296,40 +304,41 @@ class GetTasksDiagnosticsView(
                                 nbr_facilitators += 1
                                 already_count_facilitator = True
 
-                            _region = get_region_of_village_by_sql_id(
-                                administrative_levels_db,
-                                _task["administrative_level_id"],
+                            _departement = (
+                                get_departement_of_administrative_level_by_sql_id(
+                                    administrative_levels_db,
+                                    _task["administrative_level_id"],
+                                )
                             )
-                            if _region:
-                                _region_name = _region["name"]
-                                if regions.get(_region_name):
-                                    if _task["completed"]:
-                                        regions[_region_name][
-                                            "nbr_tasks_completed"
-                                        ] += 1
-                                    regions[_region_name]["nbr_tasks"] += 1
+                            if _departement:
+                                _departement_name = _departement["name"]
+                                if _task["completed"]:
+                                    departements[_departement_name][
+                                        "nbr_tasks_completed"
+                                    ] += 1
+                                departements[_departement_name]["nbr_tasks"] += 1
 
-            for region, values in regions.items():
-                regions[region]["percentage_tasks_completed"] = (
+            for departement, values in departements.items():
+                departements[departement]["percentage_tasks_completed"] = (
                     (
                         (
-                            regions[region]["nbr_tasks_completed"]
-                            / regions[region]["nbr_tasks"]
+                            departements[departement]["nbr_tasks_completed"]
+                            / departements[departement]["nbr_tasks"]
                         )
                         * 100
                     )
-                    if regions[region]["nbr_tasks"]
+                    if departements[departement]["nbr_tasks"]
                     else 0
                 )
 
         if search_by_locality:
             return self.render_to_json_response(
                 {
-                    "type": type_header.title(),
+                    "type": type_header,
                     "nbr_tasks": nbr_tasks,
                     "nbr_tasks_completed": nbr_tasks_completed,
                     "percentage_tasks_completed": percentage_tasks_completed,
-                    "region": _region["name"] if _region else None,
+                    "departement": _departement["name"] if _departement else None,
                     "search_by_locality": search_by_locality,
                     "nbr_facilitators": nbr_facilitators,
                     "nbr_villages": nbr_villages,
@@ -340,7 +349,7 @@ class GetTasksDiagnosticsView(
         return self.render_to_json_response(
             {
                 "type": type_header,
-                "regions": regions,
+                "departements": departements,
                 "search_by_locality": search_by_locality,
                 "nbr_facilitators": nbr_facilitators,
             },
