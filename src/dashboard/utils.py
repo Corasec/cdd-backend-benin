@@ -1151,7 +1151,6 @@ def sync_geographicalunits_with_cvd_on_facilittor(
 
 def sort_months_dict(months_dict, request=None):
     # Sort the months chronologically
-    # sorted_months_keys = sorted(months_dict.keys(), key=lambda x: datetime.strptime(x, "%B %Y"))
     if request and request.LANGUAGE_CODE == "fr":
         sorted_months_keys = sorted(
             months_dict.keys(),
