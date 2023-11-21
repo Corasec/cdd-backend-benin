@@ -12,7 +12,7 @@ from cloudant.document import Document
 from administrativelevels import models as administrativelevels_models
 import unicodedata
 from cdd.constants import ADMINISTRATIVE_LEVEL_TYPE, AGENT_ROLE
-from collections import Counter
+from collections import Counter, defaultdict, OrderedDict
 
 
 def structure_the_words(word):
@@ -1147,3 +1147,52 @@ def sync_geographicalunits_with_cvd_on_facilittor(
         print(geographical_units)
         print()
         print()
+
+
+def sort_months_dict(months_dict, request=None):
+    # Sort the months chronologically
+    # sorted_months_keys = sorted(months_dict.keys(), key=lambda x: datetime.strptime(x, "%B %Y"))
+    if request and request.LANGUAGE_CODE == "fr":
+        sorted_months_keys = sorted(
+            months_dict.keys(),
+            key=lambda x: (
+                int(x.split()[1]),
+                [
+                    "janvier",
+                    "février",
+                    "mars",
+                    "avril",
+                    "mai",
+                    "juin",
+                    "juillet",
+                    "août",
+                    "septembre",
+                    "octobre",
+                    "novembre",
+                    "décembre",
+                ].index(x.split()[0].lower()),
+            ),
+        )
+    else:
+        sorted_months_keys = sorted(
+            months_dict.keys(), key=lambda x: datetime.strptime(x, "%B %Y")
+        )
+    # Create an ordered dictionary with sorted months
+    sorted_months = OrderedDict(
+        (month, months_dict[month]) for month in sorted_months_keys
+    )
+    return sorted_months
+
+
+# def get_active_facilitators_monthly(list_facilitators):
+#     # Create a dictionary to store the count of active facilitators for each month
+#     active_facilitators_monthly = defaultdict(int)
+#     for facilitator in list_facilitators:
+#             monthly_activity = facilitator.get_monthly_activity()
+
+#             # Increment the count for each month with at least one task update
+#             for month, task_count in monthly_activity.items():
+#                 if task_count > 0:
+#                     active_facilitators_monthly[month] += 1
+
+#     return dict(active_facilitators_monthly)

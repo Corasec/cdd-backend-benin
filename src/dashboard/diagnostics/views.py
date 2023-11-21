@@ -5,19 +5,21 @@ from django.utils.translation import gettext_lazy
 from django.conf import settings
 from dashboard.diagnostics.forms import DiagnosticsForm
 from dashboard.utils import (
-    get_child_administrative_levels,
-    get_parent_administrative_level,
-    get_documents_by_type,
-    get_administrative_levels_by_type,
-    get_region_of_village_by_sql_id,
+    # get_child_administrative_levels,
+    # get_parent_administrative_level,
+    # get_documents_by_type,
+    # get_administrative_levels_by_type,
+    # get_region_of_village_by_sql_id,
     get_departement_of_administrative_level_by_sql_id,
     get_all_docs_administrative_levels_by_type_and_administrative_id,
     get_all_docs_administrative_levels_by_type_and_parent_id,
     get_all_docs_administrative_levels_by_type,
+    sort_months_dict,
 )
-from cdd.constants import ADMINISTRATIVE_LEVEL_TYPE
+from cdd.constants import ADMINISTRATIVE_LEVEL_TYPE, AGENT_ROLE
 from no_sql_client import NoSQLClient
 from authentication.models import Facilitator
+from collections import defaultdict, OrderedDict
 
 
 class DashboardDiagnosticsCDDView(PageMixin, LoginRequiredMixin, FormView):
@@ -49,7 +51,43 @@ class DashboardDiagnosticsCDDView(PageMixin, LoginRequiredMixin, FormView):
             "arrondissement",
             "village",
         ]
+        # exclude test account
+        facilitators = Facilitator.objects.all().exclude(username__icontains="test")
+        # exclude undeployed agents
+        facilitators = facilitators.exclude(username__icontains="FC_")
+        context["total_fc"] = facilitators.filter(role=AGENT_ROLE.FC).count()
+        context["total_sc"] = facilitators.filter(role=AGENT_ROLE.SC).count()
 
+        active_facilitators_monthly = defaultdict(int)
+        percent_le_30 = (
+            percent_in_30_50
+        ) = percent_in_50_80 = percent_gt_80 = percent_at_100 = 0
+        for facilitator in facilitators:
+            facilitator.completion_percentage = facilitator.get_tasks_completion()
+            if facilitator.completion_percentage <= 30:
+                percent_le_30 += 1
+            if 30 < facilitator.completion_percentage <= 50:
+                percent_in_30_50 += 1
+            if 50 < facilitator.completion_percentage <= 80:
+                percent_in_50_80 += 1
+            if facilitator.completion_percentage > 80:
+                percent_gt_80 += 1
+            if facilitator.completion_percentage == 100:
+                percent_at_100 += 1
+
+            monthly_activity = facilitator.get_monthly_activity()
+            for month, task_count in monthly_activity.items():
+                if task_count > 0:
+                    active_facilitators_monthly[month] += 1
+
+        context["percent_le_30"] = percent_le_30
+        context["percent_in_30_50"] = percent_in_30_50
+        context["percent_in_50_80"] = percent_in_50_80
+        context["percent_gt_80"] = percent_gt_80
+        context["percent_at_100"] = percent_at_100
+        context["active_facilitators_monthly"] = sort_months_dict(
+            active_facilitators_monthly, self.request
+        )
         # mapbox coordinate conf for departement
 
         return context

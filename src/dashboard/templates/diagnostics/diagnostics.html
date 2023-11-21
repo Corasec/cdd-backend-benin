@@ -47,6 +47,68 @@
                                     <div class="card-body" >
 
                                         <div class="card-body table-responsive">
+                                            <table id="indicators_total_table" class="table table-bordered">
+                                                <thead>
+                                                <tr>
+                                                    <th>{% translate "Nombre de SC en activité" %}</th>
+                                                    <td>{{ total_sc }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>{% translate "Nombre de FC en activité" %}</th>
+                                                    <td>{{ total_fc }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>{% translate "Total" %}</th>
+                                                    <td>{{ total_sc|add:total_fc }}</td>
+                                                </tr>
+                                            </table>
+                                        </div>
+
+                                        <div class="card-body table-responsive">
+                                            <table id="indicators_percent_table" class="table table-bordered">
+                                                <thead>
+                                                <tr>
+                                                    <th>{% translate "Nombre d'agents à 30% ou moins" %}</th>
+                                                    <td>{{ percent_le_30 }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>{% translate "Nombre d'agents entre 30% et 50%" %}</th>
+                                                    <td>{{ percent_in_30_50 }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>{% translate "Nombre d'agents entre 50% et 80%" %}</th>
+                                                    <td>{{ percent_in_50_80 }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>{% translate "Nombre d'agents au dessus de 80%" %}</th>
+                                                    <td>{{ percent_gt_80 }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>{% translate "Nombre d'agents à 100 %" %}</th>
+                                                    <td>{{ percent_at_100 }}</td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                        <div class="card-body table-responsive">
+                                            <table id="indicators_active_agents_table" class="table">
+                                                <thead>
+                                                <tr>
+                                                    <th>Mois</th>
+                                                    <th>Nombre d'agents</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {% for month, number in active_facilitators_monthly.items %}
+                                                    <tr>
+                                                        <td>{{ month|title }}</td>
+                                                        <td>{{ number }}</td>
+                                                    </tr>
+                                                    {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+
+                                        <div class="card-body table-responsive">
                                             <table id="table" class="table table-bordered">
                                                 <thead>
                                                 <tr>
@@ -67,7 +129,6 @@
                                             <div id="_p"></div>
                                             
                                         </div>
-
                                     </div>
                                 </div>
                             </div>
