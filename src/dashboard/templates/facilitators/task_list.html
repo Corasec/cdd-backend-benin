@@ -203,7 +203,7 @@
                                                             <div class="form-group row">
                                                                 <label class="col-sm-3 col-form-label">{{ v2.name }}</label>
                                                                 <div class="col-sm-9">
-                                                                    <input type="text" readonly value="{% if v2.value %}{{ v2.value }}{% else %}-{% endif %}" class="form-control" />
+                                                                    <input type="text" readonly value="{% if v2.value is True %}OUI{% elif v2.value is False %}NON{% elif v2.value %}{{ v2.value }}{% else %}-{% endif %}" class="form-control" />
                                                                 </div>
                                                                 <div class="clearfix"></div>
                                                             </div>
@@ -222,7 +222,7 @@
                                                                 <div class="form-group row">
                                                                     <label class="col-sm-3 col-form-label">{{ dicts2.name|structureTheWords }}</label>
                                                                     <div class="col-sm-9">
-                                                                        <input type="text" readonly value="{% if dicts2.value %}{{ dicts2.value }}{% else %}-{% endif %}" class="form-control" />
+                                                                        <input type="text" readonly value="{% if dicts2.value is True %}OUI{% elif dicts2.value is False %}NON{% elif dicts2.value %}{{ dicts2.value }}{% else %}-{% endif %}" class="form-control" />
                                                                     </div>
                                                                     <div class="clearfix"></div>
                                                                 </div>
@@ -236,7 +236,7 @@
                                                     <div class="form-group row">
                                                         <label class="col-sm-3 col-form-label">{{ v1.name }}</label>
                                                         <div class="col-sm-9">
-                                                            <input type="text" readonly value="{% if v1.value %}{{ v1.value }}{% else %}-{% endif %}" class="form-control" />
+                                                            <input type="text" readonly value="{% if v1.value is True %}OUI{% elif v1.value is False %}NON{% elif v1.value %}{{ v1.value }}{% else %}-{% endif %}" class="form-control" />
                                                         </div>
                                                         <div class="clearfix"></div>
                                                     </div>
@@ -256,7 +256,7 @@
                                                         <div class="form-group row">
                                                             <label class="col-sm-3 col-form-label">{{ dicts0.name|structureTheWords }}</label>
                                                             <div class="col-sm-9">
-                                                                <input type="text" readonly value="{% if dicts0.value %}{{ dicts0.value }}{% else %}-{% endif %}" class="form-control" />
+                                                                <input type="text" readonly value="{% if dicts0.value is True %}OUI{% elif dicts0.value is False %}NON{% elif dicts0.value %}{{ dicts0.value }}{% else %}-{% endif %}" class="form-control" />
                                                             </div>
                                                             <div class="clearfix"></div>
                                                         </div>
@@ -270,7 +270,7 @@
                                         <div class="form-group row">
                                             <label class="col-sm-3 col-form-label">{{ v.name }}</label>
                                             <div class="col-sm-9">
-                                                <input type="text" readonly value="{% if v.value %}{{ v.value }}{% else %}-{% endif %}" class="form-control" />
+                                                <input type="text" readonly value="{% if v.value is True %}OUI{% elif v.value is False %}NON{% elif v.value %}{{ v.value }}{% else %}-{% endif %}" class="form-control" />
                                             </div>
                                             <div class="clearfix"></div>
                                         </div>
@@ -291,7 +291,7 @@
                                                 <div class="form-group row">
                                                     <label class="col-sm-3 col-form-label">{{ dicts1.name|structureTheWords }}</label>
                                                     <div class="col-sm-9">
-                                                        <input type="text" readonly value="{% if dicts1.value %}{{ dicts1.value }}{% else %}-{% endif %}" class="form-control" />
+                                                        <input type="text" readonly value="{% if dicts1.value is True %}OUI{% elif dicts1.value is False %}NON{% elif dicts1.value %}{{ dicts1.value }}{% else %}-{% endif %}" class="form-control" />
                                                     </div>
                                                     <div class="clearfix"></div>
                                                 </div>
@@ -305,7 +305,7 @@
                             <div class="form-group row">
                                 <label class="col-sm-3 col-form-label">{{ dicts.name }}</label>
                                 <div class="col-sm-9">
-                                    <input type="text" readonly value="{% if dicts.value %}{{ dicts.value }}{% else %}-{% endif %}" class="form-control" />
+                                    <input type="text" readonly value="{% if dicts.value is True %}OUI{% elif dicts.value is False %}NON{% elif dicts.value %}{{ dicts.value }}{% else %}-{% endif %}" class="form-control" />
                                 </div>
                                 <div class="clearfix"></div>
                             </div>

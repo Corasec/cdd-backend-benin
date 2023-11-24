@@ -40,7 +40,7 @@ SECRET_KEY = env("SECRET_KEY")
 DEBUG = env.bool("DEBUG", False)
 print(DEBUG)
 
-ALLOWED_HOSTS += ["127.0.0.1"]
+ALLOWED_HOSTS += ["127.0.0.1", "cdd.coso.gouv.bj"]
 
 # Application definition
 
@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django_filters",
+    "corsheaders",
 ]
 
 CREATED_APPS = [
@@ -79,6 +80,7 @@ MIDDLEWARE = LOCAL_MIDDLEWARE + [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
 ]
 
 ROOT_URLCONF = "cdd.urls"
@@ -102,6 +104,11 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "cdd.wsgi.application"
 
+CORS_ALLOWED_ORIGINS = [
+    "https://cdd.coso.gouv.bj",
+    "http://localhost:8080",
+    "http://127.0.0.1:8080",
+]
 
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases

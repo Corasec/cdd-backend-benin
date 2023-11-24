@@ -64,7 +64,6 @@ class ProjectListTableView(LoginRequiredMixin, generic.ListView):
     def get_results(self):
         projects = []
         projects = list(Project.objects.all())
-        print("language : ", self.request.LANGUAGE_CODE == "fr")
         return projects
 
     def get_queryset(self):

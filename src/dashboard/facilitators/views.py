@@ -448,9 +448,11 @@ class FacilitatorTaskListView(
     context_object_name = "tasks"
 
     def get_results(self):
+        print("in it 1")
         administrative_level_id = self.request.GET.get("administrative_level")
         # phase_id = self.request.GET.get('phase')
         # activity_id = self.request.GET.get('activity')
+        print("in it 2")
         phase_name = self.request.GET.get("phase")
         activity_name = self.request.GET.get("activity")
         task_name = self.request.GET.get("task")
@@ -465,7 +467,7 @@ class FacilitatorTaskListView(
             selector["activity_name"] = activity_name
         if task_name:
             selector["name"] = task_name
-
+        print("in it 3")
         return self.facilitator_db.get_query_result(selector)
 
     def get_queryset(self):
@@ -581,7 +583,6 @@ class FacilitatorTaskListView(
         # add monthly activity
         facilitator = Facilitator.objects.get(no_sql_db_name=self.facilitator_db_name)
         context["monthly_activity"] = facilitator.get_monthly_activity()
-        print("monthly_activity", context["monthly_activity"])
         return context
 
 

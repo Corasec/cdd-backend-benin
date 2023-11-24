@@ -153,7 +153,8 @@ def structure_the_fields_labels(task):
             fields_options = form[i].get("options").get("fields")
             dict_values = {}
             for field, value in fields.items():
-                label = fields_options.get(field).get("label")
+                label = fields_options.get(field)
+                label = label.get("label") if label else False
                 if type(value) in (dict, list):
                     if type(value) == list:
                         _list1 = []

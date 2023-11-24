@@ -110,13 +110,7 @@
 
                                         <div class="card-body table-responsive">
                                             <table id="table" class="table table-bordered">
-                                                <thead>
-                                                <tr>
-                                                    <th>{% translate 'Département' %}</th>
-                                                    <th>{% translate 'Task Completed' %}</th>
-                                                    <th>{% translate 'Percentage' %}</th>
-                                                </tr>
-                                                </thead>
+                                                
                                                 <tbody>
                                                     <tr>
                                                         <td></td>
@@ -350,9 +344,9 @@ padding: 0;
                                 table.innerHTML = `
                                 <thead>
                                     <tr>
-                                        <th>{% translate '`+data.type+`' %}</th>
-                                        <th>{% translate 'Task Completed' %}</th>
-                                        <th>{% translate 'Percentage' %}</th>
+                                        <th>{% translate '`+data.type[0].toUpperCase() + data.type.slice(1)+`' %}</th>
+                                        <th>{% translate 'Tâches achevées' %}</th>
+                                        <th>{% translate 'Pourcentage' %}</th>
                                     </tr>
                                     </thead>
 
@@ -372,8 +366,8 @@ padding: 0;
                                 <thead>
                                     <tr>
                                         <th>{% translate 'Département' %}</th>
-                                        <th>{% translate 'Task Completed' %}</th>
-                                        <th>{% translate 'Percentage' %}</th>
+                                        <th>{% translate 'Tâches achevées' %}</th>
+                                        <th>{% translate 'Pourcentage' %}</th>
                                     </tr>
                                     </thead>
 
@@ -421,8 +415,8 @@ padding: 0;
                     <thead>
                         <tr>
                             <th>{% translate 'Département' %}</th>
-                            <th>{% translate 'Task Completed' %}</th>
-                            <th>{% translate 'Percentage' %}</th>
+                            <th>{% translate 'Tâches achevées' %}</th>
+                            <th>{% translate 'Pourcentage' %}</th>
                         </tr>
                         </thead>
 
