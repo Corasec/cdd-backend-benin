@@ -17,22 +17,22 @@
 
             <div class="clearfix"></div>
              <div class="row facilitators-filter">
-                <div class="col-2">
+                <div class="col-sm-6 col-md-4 col-lg-2">
                     {% bootstrap_field form.departement show_label=False %}
                 </div>
-                <div class="col-2">
+                <div class="col-sm-6 col-md-4 col-lg-2">
                     {% bootstrap_field form.commune show_label=False %}
                 </div>
-                <div class="col-2">
+                <div class="col-sm-6 col-md-4 col-lg-2">
                     {% bootstrap_field form.arrondissement show_label=False %}
                 </div>
-                <div class="col-2">
+                <div class="col-sm-6 col-md-4 col-lg-2">
                     {% bootstrap_field form.village show_label=False %}
                 </div>
-                <div class="col-2">
+                <div class="col-sm-6 col-md-4 col-lg-2">
                     {% bootstrap_field form.role show_label=False %}
                 </div>
-                <div class="col-2">
+                <div class="col-sm-6 col-md-4 col-lg-2">
                     <a class="btn fs12 text-bold-family text-primary pull-right p-0" style="margin-top: 8px;"
                        id="clear_all_filters">
                         {% translate "Clear all filters" %}
@@ -47,6 +47,7 @@
                 <input class="form-control" id="search" placeholder="{% translate 'Search by name' %}...">
             </div>
 
+
             <div class="card">
                 <div class="card-body table-responsive">
                     <div id="facilitators-list"></div>
@@ -55,44 +56,6 @@
                     <i class="fas fa-2x fa-sync-alt fa-spin"></i>
                 </div>
             </div>
-
-            {% comment %} <div class="card">
-                <div class="card-body table-responsive">
-                    <table id="table" class="table">
-                        <thead>
-                        <tr>
-                            <th width="30%">{% translate 'Name' %}</th>
-                            <th width="30%">{% translate 'Username' %}</th>
-                            <th width="10%">{% translate 'Type' %}</th>
-                            <th  width="30%" >{% translate 'Action' %}</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {% for facilitator in facilitators %}
-                            <tr>
-                                <td>{{ facilitator.get_name }}</td>
-                                <td>{{ facilitator.username }}</td>
-                                <td>{{ facilitator.get_type|upper }}</td>
-                                <td>
-                                    <a href="{% url 'dashboard:facilitators:detail' facilitator.no_sql_db_name %}"
-                                       class="btn btn-primary btn-xs" title="{% translate 'See profile' %}">
-                                        <span class="_web">{% translate 'See profile' %}</span>
-                                        <span class="_mobile"><i class="fa fa-user"></i></span>
-                                    </a>
-                                    <a href="{% url 'dashboard:facilitators:update' facilitator.pk %}"
-                                       class="btn btn-primary btn-xs" title="{% translate 'See profile' %}">
-                                        <span class="_web">{% translate 'Edit profile' %}</span>
-                                        <span class="_mobile"><i class="fa fa-edit"></i></span>
-                                    </a>
-                                </td>
-                            </tr>
-                        {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </div> {% endcomment %}
-
-
         </div>
     </div>
 {% endblock %}

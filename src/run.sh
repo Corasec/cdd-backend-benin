@@ -29,7 +29,8 @@ case "$1" in
     serve )
         gunicorn cdd.wsgi:application \
         --bind 0.0.0.0:9000 \
-        --workers 4
+        --workers 4 \
+        --timeout 600
     ;;
 
     test )

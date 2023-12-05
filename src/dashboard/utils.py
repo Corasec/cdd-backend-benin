@@ -1183,6 +1183,55 @@ def sort_months_dict(months_dict, request=None):
     return sorted_months
 
 
+def make_uncomplete_tasks_with_no_sync_proof(
+    develop_mode=False, training_mode=False, no_sql_db=False, special_task_sql_id=[]
+):
+    if no_sql_db:
+        facilitators = Facilitator.objects.filter(
+            develop_mode=develop_mode,
+            training_mode=training_mode,
+            no_sql_db_name=no_sql_db,
+        )
+    else:
+        facilitators = Facilitator.objects.filter(
+            develop_mode=develop_mode, training_mode=training_mode
+        )
+    nsc = NoSQLClient()
+    for facilitator in facilitators:
+        facilitator_database = nsc.get_db(facilitator.no_sql_db_name)
+        tasks = facilitator_database.get_query_result(
+            {"type": "task", "completed": True, "support_attachments": True}
+        )
+        for task in tasks:
+            # exclude processing specials tasks
+            if special_task_sql_id and task["sql_id"] in special_task_sql_id:
+                break
+
+            attachments = task["attachments"]
+            all_attachs_filled = True
+
+            for att in attachments:
+                if (
+                    not att.get("attachment")
+                    or not (isinstance(att.get("attachment"), dict))
+                    or (
+                        isinstance(att.get("attachment"), dict)
+                        and "file:///data" in att.get("attachment").get("uri")
+                    )
+                ):
+                    all_attachs_filled = False
+                    break
+
+            if not all_attachs_filled:
+                task["completed"] = False
+                task["completed_date"] = "0000-00-00 00:00:00"
+                datetime_now = datetime.now()
+                datetime_str = f"{str(datetime_now.year)}-{str(datetime_now.month)}-{str(datetime_now.day)} {str(datetime_now.hour)}:{str(datetime_now.minute)}:{str(datetime_now.second)}"
+                task["last_updated"] = datetime_str
+                nsc.update_cloudant_document(facilitator_database, task["_id"], task)
+                print(task)
+
+
 # def get_active_facilitators_monthly(list_facilitators):
 #     # Create a dictionary to store the count of active facilitators for each month
 #     active_facilitators_monthly = defaultdict(int)

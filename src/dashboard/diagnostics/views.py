@@ -123,8 +123,6 @@ class GetTasksDiagnosticsView(
             raise Exception("The value of the element must not be null!!!")
         nsc = NoSQLClient()
         administrative_levels_db = nsc.get_db("administrative_levels")
-        print("")
-        print("GetTasksDiagnosticsView")
         administrative_levels = administrative_levels_db.all_docs(include_docs=True)[
             "rows"
         ]
