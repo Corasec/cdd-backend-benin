@@ -59,9 +59,9 @@ class DashboardDiagnosticsCDDView(PageMixin, LoginRequiredMixin, FormView):
         context["total_sc"] = facilitators.filter(role=AGENT_ROLE.SC).count()
 
         active_facilitators_monthly = defaultdict(int)
-        percent_le_30 = (
-            percent_in_30_50
-        ) = percent_in_50_80 = percent_gt_80 = percent_at_100 = 0
+        percent_le_30 = percent_in_30_50 = percent_in_50_80 = percent_gt_80 = (
+            percent_at_100
+        ) = 0
         for facilitator in facilitators:
             facilitator.completion_percentage = facilitator.get_tasks_completion()
             if facilitator.completion_percentage <= 30:

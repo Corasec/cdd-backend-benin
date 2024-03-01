@@ -233,9 +233,9 @@ class FacilitatorForm(forms.Form):
         administrative_level_choices = get_administrative_level_choices(
             administrative_levels_db
         )
-        self.fields[
-            "administrative_level"
-        ].widget.choices = administrative_level_choices
+        self.fields["administrative_level"].widget.choices = (
+            administrative_level_choices
+        )
         self.fields["administrative_level"].choices = administrative_level_choices
         print("get choices")
         self.fields["administrative_level"].widget.attrs["class"] = "region"
@@ -291,9 +291,9 @@ class UpdateFacilitatorForm(forms.ModelForm):
         administrative_level_choices = get_administrative_level_choices(
             administrative_levels_db
         )
-        self.fields[
-            "administrative_level"
-        ].widget.choices = administrative_level_choices
+        self.fields["administrative_level"].widget.choices = (
+            administrative_level_choices
+        )
         self.fields["administrative_level"].choices = administrative_level_choices
         self.fields["administrative_level"].widget.attrs["class"] = "region"
         self.fields["administrative_levels"].widget.attrs["class"] = "hidden"
@@ -352,10 +352,8 @@ class FilterFacilitatorForm(forms.Form):
         self.fields[ADMINISTRATIVE_LEVEL_TYPE.COMMUNE].widget.choices = get_choices(
             query_result_communes, "administrative_id", "name"
         )
-        self.fields[
-            ADMINISTRATIVE_LEVEL_TYPE.ARRONDISSEMENT
-        ].widget.choices = get_choices(
-            query_result_arrondissements, "administrative_id", "name"
+        self.fields[ADMINISTRATIVE_LEVEL_TYPE.ARRONDISSEMENT].widget.choices = (
+            get_choices(query_result_arrondissements, "administrative_id", "name")
         )
         self.fields[ADMINISTRATIVE_LEVEL_TYPE.VILLAGE].widget.choices = get_choices(
             query_result_villages, "administrative_id", "name"

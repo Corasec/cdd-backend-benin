@@ -576,9 +576,9 @@ class FacilitatorTaskListView(
                 else 0
             )
             del dict_administrative_levels_with_infos[key]["total_tasks"]
-        context[
-            "dict_administrative_levels_with_infos"
-        ] = dict_administrative_levels_with_infos
+        context["dict_administrative_levels_with_infos"] = (
+            dict_administrative_levels_with_infos
+        )
 
         # add monthly activity
         facilitator = Facilitator.objects.get(no_sql_db_name=self.facilitator_db_name)

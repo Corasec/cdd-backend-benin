@@ -29,6 +29,10 @@ def conversion_file_xlsx_to_dict(file_xlsx, sheet="Sheet1") -> dict:
     return read_file
 
 
+def excel_file_to_dict(excel_file):
+    return
+
+
 # TO DO : refactor save functions DRY
 def save_agents_sc_csv_datas_to_db(agent_file, sheet="SC") -> str:
     """Function to save agents (here SC role) from csv/excel file to the database"""
@@ -106,6 +110,7 @@ def save_agents_sc_csv_datas_to_db(agent_file, sheet="SC") -> str:
         if created:
             nsc.create_document(facilitator_database, doc_properties)
             print(f"created {facilitator.username} with {arr['name']}")
+            facilitator.populate_fullname()
             saved_count += 1
         # if updating, update couchdb doc
         else:
@@ -170,13 +175,16 @@ def save_agents_fc_csv_datas_to_db(agent_file, sheet="FC") -> str:
             username = f"{nom_words[0]}_{nom_words[1]}"
         else:
             username = f"{nom_words[0]}"
+        # two special edge case
+        if row["NOM"].strip() == "MAMA SAMBO Binta":
+            username = "MAMA_SAMBO_Bin"
+        if row["NOM"].strip() == "MAMA SAMBO Barikissou":
+            username = "MAMA_SAMBO_Bar"
 
         facilitator, created = Facilitator.objects.get_or_create(
             username=username,
             defaults={
-                "password": make_password(
-                    "passwordexample", salt=None, hasher="default"
-                ),
+                "password": make_password("password", salt=None, hasher="default"),
                 "active": True,
                 "role": role,
             },
@@ -208,8 +216,12 @@ def save_agents_fc_csv_datas_to_db(agent_file, sheet="FC") -> str:
         doc_properties = {
             "name": row["NOM"],
             "email": "",
-            "phone": row["CONTACT"],
-            "sex": "M." if row["SEXE"] == "Masculin" else "Mme",
+            "phone": (
+                row["CONTACT"]
+                if "CONTACT" in row and not pd.isna(row["CONTACT"])
+                else ""
+            ),
+            "sex": "M." if "SEXE" in row and row["SEXE"] == "Masculin" else "Mme",
             "role": role,
             "administrative_levels": [
                 {"name": departement["name"], "id": departement["administrative_id"]},
@@ -225,6 +237,7 @@ def save_agents_fc_csv_datas_to_db(agent_file, sheet="FC") -> str:
         if created:
             nsc.create_document(facilitator_database, doc_properties)
             print(f"created {facilitator.username} with {village['name']}")
+            facilitator.populate_fullname()
             saved_count += 1
         # if updating, update couchdb doc
         else:

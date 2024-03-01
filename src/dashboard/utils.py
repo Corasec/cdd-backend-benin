@@ -520,9 +520,9 @@ def create_task_all_facilitators(
                 _fc_activity["description"] = task_model.activity.description
                 _fc_activity["order"] = task_model.activity.order
                 _fc_activity["total_tasks"] = task_model.activity.total_tasks
-                _fc_activity[
-                    "sql_id"
-                ] = task_model.activity.id  # update doc by adding sql_id
+                _fc_activity["sql_id"] = (
+                    task_model.activity.id
+                )  # update doc by adding sql_id
 
                 nsc.update_cloudant_document(
                     facilitator_database, _fc_activity["_id"], _fc_activity
@@ -601,23 +601,23 @@ def create_task_all_facilitators(
 
                 if not _fc_task.get("last_updated"):
                     if _fc_task.get("completed"):
-                        _fc_task[
-                            "last_updated"
-                        ] = datetime_str  # update doc by adding last_updated
+                        _fc_task["last_updated"] = (
+                            datetime_str  # update doc by adding last_updated
+                        )
                     else:
-                        _fc_task[
-                            "last_updated"
-                        ] = "0000-00-00 00:00:00"  # update doc by adding last_updated
+                        _fc_task["last_updated"] = (
+                            "0000-00-00 00:00:00"  # update doc by adding last_updated
+                        )
 
                 if not _fc_task.get("completed_date"):
                     if _fc_task.get("completed"):
-                        _fc_task[
-                            "completed_date"
-                        ] = datetime_str  # update doc by adding completed_date
+                        _fc_task["completed_date"] = (
+                            datetime_str  # update doc by adding completed_date
+                        )
                     else:
-                        _fc_task[
-                            "completed_date"
-                        ] = "0000-00-00 00:00:00"  # update doc by adding completed_date
+                        _fc_task["completed_date"] = (
+                            "0000-00-00 00:00:00"  # update doc by adding completed_date
+                        )
 
                 # End management of the dates of the last update and completed
                 if (

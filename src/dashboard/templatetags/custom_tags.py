@@ -220,9 +220,9 @@ def structure_the_fields_labels(task):
                                     }
                             _list1.append(item1)
                         dict_values[field] = {
-                            "name": label
-                            if label
-                            else utils_structure_the_words(field),
+                            "name": (
+                                label if label else utils_structure_the_words(field)
+                            ),
                             "value": _list1,
                         }
                     else:
@@ -337,9 +337,9 @@ def structure_the_fields_labels(task):
                                 dict2[field5] = {"name": label1, "value": value5}
                             ii += 1
                         dict_values[field] = {
-                            "name": label
-                            if label
-                            else utils_structure_the_words(field),
+                            "name": (
+                                label if label else utils_structure_the_words(field)
+                            ),
                             "value": dict2,
                         }
                 else:
