@@ -516,3 +516,28 @@ ADM2 = [
     "GNELTOKO",
 ]
 ADM_LIST = ADM1 + ADM2
+ADM3 = [
+    "ATACORA",
+    "GORGOBA",
+    "SAKASSON-DOMPAGO",
+    "GBÉNIKI",
+    "HONGON",
+    "GOUFANROU",
+    "PAPATIA",
+    "WÉMÈ",
+    "TASSIGOUROU",
+    "BIRNI-KANKOULKA",
+    "SAKASSON-DITAMARI",
+    "YAKABISSI",
+    "CHABI COUMA",
+    "BIRNI MARO",
+    "CHABI – COUMA",
+    "KOUBORO",
+    "GANTIÉCO",
+    "TAMANDÉ",
+    "KOUANDE",
+    "BIRNI-KPÉBIROU",
+    "BIRNI",
+]
+USERNAMES = ["SOUNKOUA_N'dah", "OROU_KINNOU", "MAMAN_Taariq", "YANTO_Innocent"]
+ADM4 = ["IGBÈRÈ", "MODOGUI"]

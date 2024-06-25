@@ -11,8 +11,9 @@ from cloudant.document import Document
 
 from administrativelevels import models as administrativelevels_models
 import unicodedata
-from cdd.constants import ADMINISTRATIVE_LEVEL_TYPE, AGENT_ROLE
+from cdd.constants import ADMINISTRATIVE_LEVEL_TYPE, AGENT_ROLE, ADM_LIST
 from collections import Counter, defaultdict, OrderedDict
+from datetime import datetime
 
 
 def structure_the_words(word):
@@ -359,10 +360,20 @@ def get_documents_by_type(db, _type, empty_choice=True, attrs={}):
 
 # TODO Refactor para la nueva logica
 def create_task_all_facilitators(
-    database, task_model, develop_mode=False, trainning_mode=False, no_sql_db=False
+    database,
+    task_model,
+    develop_mode=False,
+    trainning_mode=False,
+    no_sql_db=False,
+    fc_list=[],
+    adm_list=[],
 ):
     # get only facilitators suitables for the task
     f_managers = Facilitator.objects.filter(role=task_model.manager_role)
+    # if provided finite list of FC, filter
+    if fc_list:
+        f_managers = f_managers.filter(username__in=fc_list)
+    # f_managers = Facilitator.objects.filter(role=task_model.manager_role).exclude(username__contains="FC_")
     if no_sql_db:
         facilitators = f_managers.filter(
             develop_mode=develop_mode,
@@ -399,6 +410,10 @@ def create_task_all_facilitators(
         for administrative_level in facilitator_administrative_levels[0][
             "administrative_levels"
         ]:
+            # if a list of administrative level is specify
+            if adm_list and administrative_level["name"] not in adm_list:
+                continue
+
             adm_database = nsc.get_db("administrative_levels")
             adm_lvl = adm_database.get_query_result(
                 {"administrative_id": administrative_level["id"]}
@@ -799,7 +814,10 @@ def create_task_one_facilitator(database, task_model, no_sql_db):
 
 
 # from dashboard.utils import sync_tasks
-def sync_tasks(develop_mode=False, training_mode=False, no_sql_db=False):
+def sync_tasks(
+    develop_mode=False, training_mode=False, no_sql_db=False, fc_list=[], adm_list=[]
+):
+    start_date = datetime.now()
     tasks = Task.objects.all().prefetch_related()
     for task in tasks:
         print("syncing: ", task.phase.order, task.activity.order, task.order)
@@ -808,8 +826,16 @@ def sync_tasks(develop_mode=False, training_mode=False, no_sql_db=False):
         # else:
         #     create_task_all_facilitators("process_design", task, develop_mode, training_mode)
         create_task_all_facilitators(
-            "process_design", task, develop_mode, training_mode, no_sql_db
+            "process_design",
+            task,
+            develop_mode,
+            training_mode,
+            no_sql_db,
+            fc_list,
+            adm_list,
         )
+    end_date = datetime.now()
+    print(f"****************duration : {end_date - start_date}****************")
 
 
 def sync_last_n_tasks(
@@ -1230,6 +1256,14 @@ def make_uncomplete_tasks_with_no_sync_proof(
                 task["last_updated"] = datetime_str
                 nsc.update_cloudant_document(facilitator_database, task["_id"], task)
                 print(task)
+
+
+def get_first_word(sentence):
+    words = sentence.split()
+    if words:
+        return words[0]
+    else:
+        return None
 
 
 # def get_active_facilitators_monthly(list_facilitators):

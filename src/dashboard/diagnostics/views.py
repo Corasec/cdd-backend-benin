@@ -15,6 +15,7 @@ from dashboard.utils import (
     get_all_docs_administrative_levels_by_type_and_parent_id,
     get_all_docs_administrative_levels_by_type,
     sort_months_dict,
+    get_first_word,
 )
 from cdd.constants import ADMINISTRATIVE_LEVEL_TYPE, AGENT_ROLE
 from no_sql_client import NoSQLClient
@@ -79,15 +80,38 @@ class DashboardDiagnosticsCDDView(PageMixin, LoginRequiredMixin, FormView):
             for month, task_count in monthly_activity.items():
                 if task_count > 0:
                     active_facilitators_monthly[month] += 1
+                    gender = get_first_word(facilitator.fullname)
+                    active_facilitators_monthly[
+                        f"{month} {facilitator.role}_{gender}"
+                    ] += 1
 
+        active_facilitators_monthly = sort_months_dict(
+            active_facilitators_monthly, self.request
+        )
+        processed_monthly_activity = defaultdict(
+            lambda: {"total": 0, "SC_M.": 0, "SC_Mme": 0, "FC_M.": 0, "FC_Mme": 0}
+        )
+        print("********afm : ", active_facilitators_monthly)
+        for key, value in active_facilitators_monthly.items():
+            parts = key.split(" ", 2)
+            month = " ".join(parts[:2])
+            user_type = parts[2] if len(parts) > 2 else "total"
+            processed_monthly_activity[month][user_type] = value
+
+        # Convert the defaultdict to a regular dict for easier handling in the template
+        processed_monthly_activity = dict(processed_monthly_activity)
+        print("********processed : ", processed_monthly_activity)
         context["percent_le_30"] = percent_le_30
         context["percent_in_30_50"] = percent_in_30_50
         context["percent_in_50_80"] = percent_in_50_80
         context["percent_gt_80"] = percent_gt_80
         context["percent_at_100"] = percent_at_100
-        context["active_facilitators_monthly"] = sort_months_dict(
-            active_facilitators_monthly, self.request
-        )
+        context["active_facilitators_monthly"] = active_facilitators_monthly
+        context["processed_monthly_activity"] = processed_monthly_activity
+        # context["active_facilitators_monthly"] = sort_months_dict(
+        #     active_facilitators_monthly, self.request
+        # )
+
         # mapbox coordinate conf for departement
 
         return context
@@ -104,7 +128,7 @@ class DashboardDiagnosticsCDDView(PageMixin, LoginRequiredMixin, FormView):
             template=self.get_template_names(),
             context=context,
             using=self.template_engine,
-            **response_kwargs
+            **response_kwargs,
         )
 
 

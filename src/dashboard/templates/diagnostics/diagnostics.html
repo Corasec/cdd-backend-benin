@@ -1,4 +1,5 @@
 {% extends 'layouts/base.html' %}
+{% load static i18n custom_tags %}
 {% load bootstrap4 static i18n %}
 {% block extracss %}
     <link href="{% static 'plugins/mapbox-gl-js/v2.6.1/mapbox-gl.css' %}" rel="stylesheet">
@@ -89,24 +90,7 @@
                                                 </tr>
                                             </table>
                                         </div>
-                                        <div class="card-body table-responsive">
-                                            <table id="indicators_active_agents_table" class="table">
-                                                <thead>
-                                                <tr>
-                                                    <th>Mois</th>
-                                                    <th>Nombre d'agents</th>
-                                                </tr>
-                                                </thead>
-                                                <tbody>
-                                                    {% for month, number in active_facilitators_monthly.items %}
-                                                    <tr>
-                                                        <td>{{ month|title }}</td>
-                                                        <td>{{ number }}</td>
-                                                    </tr>
-                                                    {% endfor %}
-                                                </tbody>
-                                            </table>
-                                        </div>
+                                        
 
                                         <div class="card-body table-responsive">
                                             <table id="table" class="table table-bordered">
@@ -128,6 +112,32 @@
                             </div>
 
 
+                        </div>
+                        <div class="card-body table-responsive">
+                            <table id="indicators_active_agents_table" class="table">
+                                <thead>
+                                <tr>
+                                    <th>Mois</th>
+                                    <th>SC (masculin)</th>
+                                    <th>SC (féminin)</th>
+                                    <th>FC (masculin)</th>
+                                    <th>FC (féminin)</th>
+                                    <th>Total</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                    {% for month, data in processed_monthly_activity.items %}
+                                        <tr>
+                                            <td>{{ month }}</td>
+                                            <td>{{ data|get:"SC_M." }}</td>
+                                            <td>{{ data|get:"SC_Mme" }}</td>
+                                            <td>{{ data|get:"FC_M." }}</td>
+                                            <td>{{ data|get:"FC_Mme" }}</td>
+                                            <td>{{ data.total }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
                         </div>
                         <div class="overlay z-index1000" id="statistics-spin">
                             <i class="fas fa-10x fa-sync-alt fa-spin">
