@@ -11,7 +11,7 @@ WORKDIR /usr/appserver
 
 # install requirement
 COPY requirements.txt .
-RUN pip install -r requirements.txt  
+RUN pip install -r requirements.txt
 
 # copy all the code
 COPY . .

@@ -443,6 +443,7 @@ def create_task_all_facilitators(
                 continue
 
             # Get phase
+            print("-------getting phase")
             new_phase = phase[0].copy()
             del new_phase["_id"]
             del new_phase["_rev"]
@@ -475,6 +476,7 @@ def create_task_all_facilitators(
             if len(fc_phase) < 1:
                 # create the phase
                 nsc.create_document(facilitator_database, new_phase)
+                print("------phase created")
                 # Get phase
                 fc_phase = facilitator_database.get_query_result(new_phase)[0]
             else:
